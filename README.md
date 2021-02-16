@@ -90,14 +90,14 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 
 ## Pipeline runtime parameters
 ### Build Agent Generation
-![Runtime parameters for Build Agent Generation](./assets/BuildAgentGeneration-Queue.png =400x)  
+![Runtime parameters for Build Agent Generation](./assets/BuildAgentGeneration-Queue.png)  
 
 - __Build Agent Image__: which image to build, choice between `Windows Server 2019` and `Ubuntu 20.04`  
 - __Variable Group__: name of the Variable Group containing the variables necessary for execution
 - __Agent Pool__: the Agent Pool to use for running the pipeline
 
 ### Managed Image Cleanup
-![Runtime parameters for Managed Images Cleanup](./assets/ManagedImageCleanup-Queue.png =400x)
+![Runtime parameters for Managed Images Cleanup](./assets/ManagedImageCleanup-Queue.png)
 
 - __Variable Group__: name of the Variable Group containing the variables necessary for execution
 
