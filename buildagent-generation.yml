@@ -17,8 +17,6 @@ parameters:
 
 trigger: none
 
-pool: ${{ parameters.agent_pool }}
-
 variables:
   - group: ${{ parameters.variable_group }}
 
@@ -27,6 +25,8 @@ jobs:
   displayName: Image Generation (${{ parameters.image_type }})
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 30
+  pool: 
+    name: ${{ parameters.agent_pool }}
 
   steps:    
   - script: |
@@ -108,6 +108,8 @@ jobs:
   displayName: Managed Image Generation (${{ parameters.image_type }})
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 30
+  pool: 
+    name: ${{ parameters.agent_pool }}
   dependsOn: imagegeneration
   variables:
   - name: OsType
@@ -142,6 +144,8 @@ jobs:
   displayName: Update Virtual Machine Scale Set (${{ parameters.image_type }})
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 30
+  pool: 
+    name: ${{ parameters.agent_pool }}
   dependsOn: managedimagegeneration
   variables:
   - name: ManagedImageId
