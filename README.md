@@ -120,6 +120,7 @@ All temporary resources that Packer create on Azure should be deleted when Packe
 The current version of Packer (1.6.6) fails to delete the .vhd of the temporary VM, this is a [known issue and supposedly on track to be resolved in version 1.7.0 of Packer](https://github.com/hashicorp/packer/issues/10416).
 
 ### Windows Image Creation
-Whenever you choose an image of Windows, the pipeline will queue more than 6 hours on the running time, i recommend to create your own self hosted agent in the cloud wheter a VM or VMSS (linux) so that you wouldn't hit the limitation of Microsoft Hosted agents maximum of 6 hours only per running job
+Whenever you choose an image of Windows, the pipeline will queue more than 6 hours on the running time, i recommend to create your own self hosted agent in the cloud wheter a VM or VMSS (linux) so that you wouldn't hit the limitation of Microsoft Hosted agents maximum of [6 hours only](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#capabilities-and-limitations) per running job 
+
 ## Agent Pool Usage
 See documentation for [YAML-based pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/pools-queues?view=azure-devops&tabs=yaml%2cbrowser&WT.mc_id=M365-MVP-5003400#choosing-a-pool-and-agent-in-your-pipeline) and [Classic pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/pools-queues?view=azure-devops&tabs=classic%2cbrowser&WT.mc_id=M365-MVP-5003400#choosing-a-pool-and-agent-in-your-pipeline)
