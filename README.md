@@ -113,14 +113,8 @@ Generating the images takes a long time, so don't be surprised. A Windows Server
 
 ### Chicken or the egg
 Generating the image through Packer takes longer than 1h (see previous bullet point), and thus can't be run on the free tier of the Microsoft Hosted Agents (limited to 1h runs). It can only be run on the paid tier of the Microsoft Hosted Agent, or it needs an existing self-hosted agent to run.  
-In this project, the initial run of the project is done on a paid Microsoft Hosted Agent and then switched over to the newly generated self-hosted agent scale set.
-
-### Lingering temporary resources
-All temporary resources that Packer create on Azure should be deleted when Packer finishes exection, only leaving the final sysprepped .vhd in the Storage Account.  
-The current version of Packer (1.6.6) fails to delete the .vhd of the temporary VM, this is a [known issue and supposedly on track to be resolved in version 1.7.0 of Packer](https://github.com/hashicorp/packer/issues/10416).
-
-### Windows Image Creation
-Whenever you choose an image of Windows, the pipeline will queue more than 6 hours on the running time, i recommend to create your own self hosted agent in the cloud wheter a VM or VMSS (linux) so that you wouldn't hit the limitation of Microsoft Hosted agents maximum of [6 hours only](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#capabilities-and-limitations) per running job 
+In this project, the initial run of the project is done on a paid Microsoft Hosted Agent and then switched over to the newly generated self-hosted agent scale set. At some point this worked, but currently Microsoft is more strictly enforcing the [6 hour](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#capabilities-and-limitations) runtime limit on Microsoft Hosted Agents. This can be worked around by first creating a self hosted Linux build agent using this process and then using the freshly generated agent to create a Windows image, or be setting up a basic self hosted agent first and use that to generate the full blown build agent.  
+This might be resolved in the near future when changes are made to the images [regarding .NET runtime installation](https://github.com/actions/virtual-environments/issues/3809), which should significantly reduce the build time.
 
 ## Agent Pool Usage
 See documentation for [YAML-based pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/pools-queues?view=azure-devops&tabs=yaml%2cbrowser&WT.mc_id=M365-MVP-5003400#choosing-a-pool-and-agent-in-your-pipeline) and [Classic pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/pools-queues?view=azure-devops&tabs=classic%2cbrowser&WT.mc_id=M365-MVP-5003400#choosing-a-pool-and-agent-in-your-pipeline)
