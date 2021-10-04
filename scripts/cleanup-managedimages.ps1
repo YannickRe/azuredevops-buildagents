@@ -10,6 +10,7 @@ param(
 )
 
 az login --service-principal --username $ClientId --password $ClientSecret --tenant $TenantId | Out-Null
+az account set -s $SubscriptionId
 
 $managedImages = az image list --resource-group $ResourceGroup --subscription $SubscriptionId --query "[].id" | Out-String | ConvertFrom-Json
 

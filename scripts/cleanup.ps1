@@ -9,6 +9,7 @@ param(
 )
 
 az login --service-principal --username $ClientId --password $ClientSecret --tenant $TenantId | Out-Null
+az account set -s $SubscriptionId
 
 $TempResourceGroupName = "${ResourcesNamePrefix}_${Image}"
 
