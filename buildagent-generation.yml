@@ -166,6 +166,7 @@ jobs:
       arguments: -ClientId $(CLIENT_ID) `
                         -ClientSecret $(CLIENT_SECRET) `
                         -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
+                        -SubscriptionId $(AZURE_SUBSCRIPTION) `
                         -TenantId $(AZURE_TENANT) `
                         -VmssName $(VmssName) `
                         -ManagedImageId $(ManagedImageId)

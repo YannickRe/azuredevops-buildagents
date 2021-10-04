@@ -13,6 +13,7 @@ param(
 )
 
 az login --service-principal --username $ClientId --password $ClientSecret --tenant $TenantId | Out-Null
+az account set -s $SubscriptionId
 
 $imageName = "$ImageType-$ResourcesNamePrefix"
 $managedImageId = az image create -g $ResourceGroup -n $imageName --location $Location --os-type $OsType --source $OsVhdUri --query 'id'
