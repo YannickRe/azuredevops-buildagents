@@ -45,7 +45,7 @@ jobs:
         $OsType = if ($ImageType.StartsWith("ubuntu")) { "Linux" } else { "Windows" }
         $TemplateDirectoryPath = Join-Path (Join-Path "virtual-environments" "images") $TemplateDirectoryName | Resolve-Path
         $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.json"
-        $ImageReadmeNameConcat = "${{ parameters.image_type }}-README.md"
+        $ImageReadmeNameConcat = "${{ parameters.image_type }}-Readme.md"
         $ImageReadmeName = $ImageReadmeNameConcat.Substring(0,1).ToUpper()+$ImageReadmeNameConcat.Substring(1)
         Write-Host "##vso[task.setvariable variable=TemplateDirectoryPath;]$TemplateDirectoryPath"
         Write-Host "##vso[task.setvariable variable=TemplatePath;]$TemplatePath"
