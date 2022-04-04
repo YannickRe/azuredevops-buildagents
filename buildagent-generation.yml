@@ -15,16 +15,13 @@ parameters:
   type: string
   default: CI Windows2019
 
-trigger: none
-
-variables:
-  - group: ${{ parameters.variable_group }}
-
 jobs:
 - job: imagegeneration
   displayName: Image Generation (${{ parameters.image_type }})
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 30
+  variables:
+    - group: ${{ parameters.variable_group }}
   pool: 
     name: ${{ parameters.agent_pool }}
 
@@ -120,6 +117,7 @@ jobs:
     value: $[ dependencies.imagegeneration.outputs['setVars.ResourcesNamePrefix'] ]
   - name: OSDiskUri
     value: $[ dependencies.imagegeneration.outputs['buildVm.OSDiskUri'] ]
+  - group: ${{ parameters.variable_group }}
 
   steps:
   - task: PowerShell@2
@@ -150,6 +148,7 @@ jobs:
   variables:
   - name: ManagedImageId
     value: $[ dependencies.managedimagegeneration.outputs['createmanagedimage.ManagedImageId'] ]
+  - group: ${{ parameters.variable_group }}
   - ${{ if eq(parameters.image_type, 'windows2019') }}:
     - name: VmssName
       value: $[variables.VMSS_Windows2019]
