@@ -14,10 +14,20 @@ parameters:
   displayName: Agent Pool
   type: string
   default: CI Windows2019
+- name: depends_on
+  displayName: First Job Depends On
+  type: object
+  default: 
+- name: repository_base_path
+  displayName: Scripts Path
+  type: string
+  default: $(Agent.BuildDirectory)
+  
 
 jobs:
 - job: imagegeneration
   displayName: Image Generation (${{ parameters.image_type }})
+  dependsOn: ${{ parameters.depends_on }}
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 30
   variables:
@@ -56,7 +66,7 @@ jobs:
     displayName: 'Build VM'
     inputs:
       targetType: filePath
-      filePath: ./scripts/build-image.ps1
+      filePath: ${{ parameters.repository_base_path }}/scripts/build-image.ps1
       arguments: -ResourcesNamePrefix $(setVars.ResourcesNamePrefix) `
                         -ClientId $(CLIENT_ID) `
                         -ClientSecret $(CLIENT_SECRET) `
@@ -82,7 +92,7 @@ jobs:
     displayName: 'Print provisioners duration'
     inputs:
       targetType: 'filePath'
-      filePath: ./scripts/measure-provisioners-duration.ps1
+      filePath: ${{ parameters.repository_base_path }}/scripts/measure-provisioners-duration.ps1
       arguments: -PackerLogPath "$(Build.ArtifactStagingDirectory)/packer-log.txt" `
                         -PrefixToPathTrim "$(TemplateDirectoryPath)" `
                         -PrintTopNLongest 25
@@ -92,7 +102,7 @@ jobs:
     condition: always()
     inputs:
       targetType: filePath
-      filePath: ./scripts/cleanup.ps1
+      filePath: ${{ parameters.repository_base_path }}/scripts/cleanup.ps1
       arguments: -ResourcesNamePrefix $(setVars.ResourcesNamePrefix) `
                      -ClientId $(CLIENT_ID) `
                      -ClientSecret $(CLIENT_SECRET) `
@@ -125,7 +135,7 @@ jobs:
     name: createmanagedimage
     inputs:
       targetType: filePath
-      filePath: ./scripts/create-managedimage.ps1
+      filePath: ${{ parameters.repository_base_path }}/scripts/create-managedimage.ps1
       arguments: -ResourcesNamePrefix $(ResourcesNamePrefix) `
                         -ClientId $(CLIENT_ID) `
                         -ClientSecret $(CLIENT_SECRET) `
@@ -161,7 +171,7 @@ jobs:
     displayName: 'Update Virtual Machine Scale Set'
     inputs:
       targetType: filePath
-      filePath: ./scripts/update-vmss.ps1
+      filePath: ${{ parameters.repository_base_path }}/scripts/update-vmss.ps1
       arguments: -ClientId $(CLIENT_ID) `
                         -ClientSecret $(CLIENT_SECRET) `
                         -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
