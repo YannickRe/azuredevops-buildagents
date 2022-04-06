@@ -45,7 +45,7 @@ jobs:
   - ${{ if ne(parameters.repository_base_path, '.') }}:
     - checkout: ${{ parameters.resource_repo_name }}
   - script: |
-      if (Test-Path .\virtual-environments\) { Remove-Item -Recurse -Force .\virtual-environments\ }
+      if (Test-Path ".\virtual-environments\") { Remove-Item -Recurse -Force ".\virtual-environments\" }
       git clone https://github.com/actions/virtual-environments.git
     displayName: 'Clone the GitHub repository'
 
