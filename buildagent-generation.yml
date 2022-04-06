@@ -29,18 +29,9 @@ parameters:
   
 
 jobs:
-- ${{ if ne(parameters.repository_base_path, '.') }}:
-  - job: checkoutrepositories
-    dependsOn: ${{ parameters.depends_on }}
-    displayName: Checkout Repositories
-    steps:
-      - checkout: self
-      - checkout: ${{ parameters.resource_repo_name }}
 - job: imagegeneration
   displayName: Image Generation (${{ parameters.image_type }})
-  ${{ if ne(parameters.repository_base_path, '.') }}:
-    dependsOn: checkoutrepositories
-  ${{ if eq(parameters.repository_base_path, '.') }}:
+  ${{ if ne(parameters.depends_on, '') }}:
     dependsOn: ${{ parameters.depends_on }}
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 30
@@ -49,7 +40,10 @@ jobs:
   pool: 
     name: ${{ parameters.agent_pool }}
 
-  steps:    
+  steps:
+  - checkout: self
+  - ${{ if ne(parameters.repository_base_path, '.') }}:
+    - checkout: ${{ parameters.resource_repo_name }}
   - script: |
       if (Test-Path .\virtual-environments\) { Remove-Item -Recurse -Force .\virtual-environments\ }
       git clone https://github.com/actions/virtual-environments.git
@@ -145,6 +139,9 @@ jobs:
   - group: ${{ parameters.variable_group }}
 
   steps:
+  - checkout: self
+  - ${{ if ne(parameters.repository_base_path, '.') }}:
+    - checkout: ${{ parameters.resource_repo_name }}
   - task: PowerShell@2
     displayName: 'Create Azure Managed Image'
     name: createmanagedimage
@@ -182,6 +179,9 @@ jobs:
       value: $[variables.VMSS_Ubuntu2004]
 
   steps:
+  - checkout: self
+  - ${{ if ne(parameters.repository_base_path, '.') }}:
+    - checkout: ${{ parameters.resource_repo_name }}
   - task: PowerShell@2
     displayName: 'Update Virtual Machine Scale Set'
     inputs:
