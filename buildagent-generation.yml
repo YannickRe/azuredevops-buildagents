@@ -51,6 +51,7 @@ jobs:
 
   steps:    
   - script: |
+      if (Test-Path .\virtual-environments\) { Remove-Item -Recurse -Force .\virtual-environments\ }
       git clone https://github.com/actions/virtual-environments.git
     displayName: 'Clone the GitHub repository'
 
