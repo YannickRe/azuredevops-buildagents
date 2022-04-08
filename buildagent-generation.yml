@@ -5,6 +5,7 @@ parameters:
   default: windows2019
   values:
   - windows2019
+  - windows2022
   - ubuntu2004
 - name: variable_group
   displayName: Variable Group
@@ -178,6 +179,9 @@ jobs:
   - ${{ if eq(parameters.image_type, 'windows2019') }}:
     - name: VmssName
       value: $[variables.VMSS_Windows2019]
+  - ${{ if eq(parameters.image_type, 'windows2022') }}:
+    - name: VmssName
+      value: $[variables.VMSS_Windows2022]
   - ${{ if eq(parameters.image_type, 'ubuntu2004') }}:
     - name: VmssName
       value: $[variables.VMSS_Ubuntu2004]
