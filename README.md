@@ -48,17 +48,6 @@ New-AzRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName $sp.A
 New-AzRoleAssignment -RoleDefinitionName "Storage Blob Data Contributor" -ServicePrincipalName $sp.ApplicationId
 ```
 
-### GitHub Token
-Generate a GitHub Personal Access Token that allows Packer to download Packages from GitHub.
-- Go to [github.com](https://github.com) and log in  
-- Click on your profile image to fold out the menu, and select `Settings`  
-- On the Settings page, select `Developer settings` from the menu
-- On the  Developer settings page, select `Personal access tokens` from the menu  
-- Click `Generate` to create a new token.
-- Give it a name and make sure you select at least `read:packages` underneath `scopes`
-
-Keep the generated token safe, for usage later in this guide.
-
 ### Azure Virtual Machine Scale Set
 To use an Azure Virtual Machine Scale Set as an Azure DevOps Scale Set Agent it has to adhere to a certain set of requirements. [The documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/scale-set-agents?view=azure-devops&WT.mc_id=M365-MVP-5003400#create-the-scale-set) contains all the required information, but at the time of writing the following things were important:
 - __VM size__: at least *Standard_D4s_v4*
@@ -84,7 +73,6 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 | AZURE_TENANT | Tenant ID of the Azure tenant that has the Azure Resource Groups and Subscription. |
 | CLIENT_ID | Id of the Azure AD application that has appriopriate permissions on the Subscription to create temporary resources and finalizing the Scale Set configuration. See output from scripts above. |
 | CLIENT_SECRET | Application secret to be used fot the connection in combination with the Client Id. See output from scripts above. |
-| GITHUB_TOKEN | A `Personal access token` for GitHub to fetch packages, having at least the `read:packages` scope. |
 | VMSS_Windows2019 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2019 |
 | VMSS_Ubuntu2004 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Ubuntu 20.04 |
 
