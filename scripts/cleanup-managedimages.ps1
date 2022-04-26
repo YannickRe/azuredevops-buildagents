@@ -20,6 +20,11 @@ $ubuntuManagedImage = az vmss show --name $VmssNameUbuntu --resource-group $Agen
 foreach ($managedImage in $managedImages) {
     if ($managedImage -ne $windowsManagedImage -and $managedImage -ne $ubuntuManagedImage) {
         Write-Host "Found a match, deleting orphaned managed image: $managedImage"
-        az image delete --ids $managedImage | Out-Null
+        try {
+            az image delete --ids $managedImage | Out-Null    
+        }
+        catch {
+            Write-Host "An error occurred while trying to delete the image. Please review the previous output for more details."
+        }
     }
 }
