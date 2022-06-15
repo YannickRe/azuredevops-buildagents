@@ -18,21 +18,17 @@ parameters:
 - name: depends_on
   displayName: First Job Depends On
   type: object
-  default: 
+  default: ' '
 - name: repository_base_path
   displayName: Scripts Path
   type: string
   default: .
-- name: resource_repo_name
-  displayName: Resource Repository Name
-  type: string
-  default: 
   
 
 jobs:
 - job: imagegeneration
   displayName: Image Generation (${{ parameters.image_type }})
-  ${{ if ne(parameters.depends_on, '') }}:
+  ${{ if ne(parameters.depends_on, ' ') }}:
     dependsOn: ${{ parameters.depends_on }}
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 30
@@ -44,7 +40,7 @@ jobs:
   steps:
   - checkout: self
   - ${{ if ne(parameters.repository_base_path, '.') }}:
-    - checkout: ${{ parameters.resource_repo_name }}
+    - checkout: ${{ parameters.repository_base_path }}
   - task: PowerShell@2
     displayName: Remove Old Virtual Environments Folder
     inputs:
@@ -145,7 +141,7 @@ jobs:
   steps:
   - checkout: self
   - ${{ if ne(parameters.repository_base_path, '.') }}:
-    - checkout: ${{ parameters.resource_repo_name }}
+    - checkout: ${{ parameters.repository_base_path }}
   - task: PowerShell@2
     displayName: 'Create Azure Managed Image'
     name: createmanagedimage
@@ -188,7 +184,7 @@ jobs:
   steps:
   - checkout: self
   - ${{ if ne(parameters.repository_base_path, '.') }}:
-    - checkout: ${{ parameters.resource_repo_name }}
+    - checkout: ${{ parameters.repository_base_path }}
   - task: PowerShell@2
     displayName: 'Update Virtual Machine Scale Set'
     inputs:

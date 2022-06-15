@@ -89,6 +89,66 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 
 - __Variable Group__: name of the Variable Group containing the variables necessary for execution
 
+## How to use
+### Templated version
+Both YML file are designed in a way that allows anyone to simply include them using the "template" instruction. You will need to create a service connection under your Azure DevOps instance before moving with the configuration. 
+
+Assuming the service connection has been setup, under your own repository, within an Azure Pipeline YML file, include the following resource: 
+
+```
+resources:
+  repositories:
+    - repository: azuredevops-buildagents
+      type: github
+      name: YannickRe/azuredevops-buildagents
+      endpoint: <your-service-connection-name>
+      ref: refs/heads/main
+```
+
+This will tell your pipeline that you're dependent upon this repository. Then, the following instructions can be freely customized to your needs. If you need some stages to be ran before the steps within this repository, then include them inside your pipeline, then call the desired template from the repository. 
+
+Calling a template is easy as doing the following: 
+
+```
+stages:
+  - stage: InsertAnyCustomStageHere
+    displayName: 'My Stage'
+    [...]
+  - stage: BuildImage
+    displayName: Build Image
+    pool:
+      name: <agent-pool>
+    jobs:
+    - template: buildagent-generation.yml@azuredevops-buildagents
+      parameters: 
+        image_type: <image-type>
+        variable_group: <variable-group>
+        agent_pool: <agent-pool>
+        repository_base_path: azuredevops-buildagents
+        resource_repo_name: azuredevops-buildagents
+```
+
+### Template parameters
+When calling a template, you must provide certain parameters. For reference, please open the file which interests you: 
+
+- __[buildagent-generation.yml](./buildagent-generation.yml)__  
+- __[managedimage-cleanup.yml](./managedimage-cleanup.yml)__  
+
+There is one important element you must be aware of: 
+
+- repository_base_path
+  - This variable dictactes how the agent should resolve the assets within this repository. When used, two things will happen:
+    - First, it will clone the repository resource specified within your YML file, which represents _this_ repository
+    - It will also use it to properly resolve the path where this repository resides on your pipeline agent
+  - When a remote template is referenced within an Azure Pipeline YML file, it doesn't clone the repository. Providing this parameter will make sure these templates understands they need to clone it before being able to run any of the scripts.
+
+Optional parameter:
+
+- depends_on
+  - You can force the jobs within this repository to depend upon your own set of tasks. To use it, simply provide the name of the job which the next job within the template should depend on.
+
+The rest is quite self explanatory. Use the other parameters to provide the remaining required details for building / cleaning the images.
+
 ## Good to know
 ### Packer
 [Packer](https://www.packer.io/) is an open source tool for creating identical machine images for multiple platforms from a single source configuration. Important to know: while building the image, Packer will spin up a VM in Azure to run the installation instructions, sys-prep that image after completion and cleanup all the temporary resources.
