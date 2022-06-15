@@ -89,8 +89,7 @@ jobs:
                         -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
                         -SubscriptionId $(AZURE_SUBSCRIPTION) `
                         -TenantId $(AZURE_TENANT) `
-                        -Location $(AZURE_LOCATION) `
-                        -GitHubFeedToken $(GITHUB_TOKEN)
+                        -Location $(AZURE_LOCATION)
     env:
       PACKER_LOG: 1
       PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
