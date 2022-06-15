@@ -134,12 +134,13 @@ When calling a template, you must provide certain parameters. For reference, ple
 - __[buildagent-generation.yml](./buildagent-generation.yml)__  
 - __[managedimage-cleanup.yml](./managedimage-cleanup.yml)__  
 
-There are two important elements you must be aware of: 
+There is one important element you must be aware of: 
 
 - repository_base_path
-  - This variable dictactes how the agent should resolve the assets within this repository. Usually, you need to provide the name of the repository you set under the "resources" instruction of your file. If you do have personalization on how the repository are cloned within your agent, please provide an adequate path.
-- resource_repo_name
-  - Quite similar to the previous parameter. This represents the name you put under your "resources" instruction, refering this repository into your pipeline.
+  - This variable dictactes how the agent should resolve the assets within this repository. When used, two things will happen:
+    - First, it will clone the repository resource specified within your YML file, which represents _this_ repository
+    - It will also use it to properly resolve the path where this repository resides on your pipeline agent
+  - When a remote template is referenced within an Azure Pipeline YML file, it doesn't clone the repository. Providing this parameter will make sure these templates understands they need to clone it before being able to run any of the scripts.
 
 Optional parameter:
 
