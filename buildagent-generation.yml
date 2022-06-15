@@ -18,7 +18,7 @@ parameters:
 - name: depends_on
   displayName: First Job Depends On
   type: object
-  default: 
+  default: ' '
 - name: repository_base_path
   displayName: Scripts Path
   type: string
@@ -26,13 +26,13 @@ parameters:
 - name: resource_repo_name
   displayName: Resource Repository Name
   type: string
-  default: 
+  default: ' '
   
 
 jobs:
 - job: imagegeneration
   displayName: Image Generation (${{ parameters.image_type }})
-  ${{ if ne(parameters.depends_on, '') }}:
+  ${{ if ne(parameters.depends_on, ' ') }}:
     dependsOn: ${{ parameters.depends_on }}
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 30
