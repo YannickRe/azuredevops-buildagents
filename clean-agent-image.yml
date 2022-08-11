@@ -7,10 +7,6 @@ parameters:
   displayName: Scripts Path
   type: string
   default: .
-- name: resource_repo_name
-  displayName: Resource Repository Name
-  type: string
-  default: 
 
 jobs:
 - job: CleanOrphanedManagedImages
@@ -23,7 +19,7 @@ jobs:
   steps:
   - checkout: self
   - ${{ if ne(parameters.repository_base_path, '.') }}:
-    - checkout: ${{ parameters.resource_repo_name }}
+    - checkout: ${{ parameters.repository_base_path }}
   - task: PowerShell@2
     displayName: 'Cleanup orphaned Managed Images'
     inputs:

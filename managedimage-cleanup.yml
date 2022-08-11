@@ -1,0 +1,26 @@
+parameters:
+- name: variable_group
+  displayName: Variable Group
+  type: string
+  default: BuildAgents
+
+schedules:
+- cron: "0 0 * * 6"
+  displayName: Weekly on Saturday
+  branches:
+    include:
+    - main
+  always: true
+
+trigger: none
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+- group: ${{ parameters.variable_group }}
+
+jobs:
+- template: clean-agent-image.yml
+  parameters:
+    variable_group: ${{ parameters.variable_group }}

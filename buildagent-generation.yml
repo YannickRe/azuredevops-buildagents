@@ -1,0 +1,29 @@
+parameters:
+- name: image_type
+  displayName: Build Agent Image
+  type: string
+  default: windows2019
+  values:
+  - windows2019
+  - windows2022
+  - ubuntu2004
+- name: variable_group
+  displayName: Variable Group
+  type: string
+  default: BuildAgents
+- name: agent_pool
+  displayName: Agent Pool
+  type: string
+  default: CI Windows2019
+
+trigger: none
+
+variables:
+  - group: ${{ parameters.variable_group }}
+
+jobs:
+- template: build-agent-image.yml
+  parameters: 
+    image_type: ${{ parameters.image_type }}
+    variable_group: ${{ parameters.variable_group }}
+    agent_pool: ${{ parameters.agent_pool }}
