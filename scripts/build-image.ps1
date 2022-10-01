@@ -10,6 +10,8 @@ param(
     [String] [Parameter (Mandatory=$true)] $TenantId
 )
 
+Write-Host $TemplatePath
+
 if (-not (Test-Path $TemplatePath))
 {
     Write-Error "'-TemplatePath' parameter is not valid. You have to specify correct Template Path"
