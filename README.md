@@ -120,13 +120,12 @@ stages:
     pool:
       name: <agent-pool>
     jobs:
-    - template: buildagent-generation.yml@azuredevops-buildagents
+    - template: buildagent-generation-template.yml@azuredevops-buildagents
       parameters: 
         image_type: <image-type>
         variable_group: <variable-group>
         agent_pool: <agent-pool>
         repository_base_path: azuredevops-buildagents
-        resource_repo_name: azuredevops-buildagents
 ```
 
 ### Template parameters

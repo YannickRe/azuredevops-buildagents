@@ -21,6 +21,6 @@ variables:
 - group: ${{ parameters.variable_group }}
 
 jobs:
-- template: clean-agent-image.yml
+- template: managedimage-cleanup-template.yml
   parameters:
     variable_group: ${{ parameters.variable_group }}
