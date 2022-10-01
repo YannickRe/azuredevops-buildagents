@@ -76,12 +76,13 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 | VMSS_Windows2019 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2019 |
 | VMSS_Windows2022 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2022 |
 | VMSS_Ubuntu2004 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Ubuntu 20.04 |
+| VMSS_Ubuntu2204 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Ubuntu 22.04 |
 
 ## Pipeline runtime parameters
 ### Build Agent Generation
 ![Runtime parameters for Build Agent Generation](./assets/BuildAgentGeneration-Queue.png)  
 
-- __Build Agent Image__: which image to build, choice between `Windows Server 2019` and `Ubuntu 20.04`  
+- __Build Agent Image__: which image to build, choice between `Windows Server 2019`, `Windows Server 2022`, `Ubuntu 20.04` and `Ubuntu 22.04`  
 - __Variable Group__: name of the Variable Group containing the variables necessary for execution
 - __Agent Pool__: the Agent Pool to use for running the pipeline
 
