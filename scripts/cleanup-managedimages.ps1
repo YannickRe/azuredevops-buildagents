@@ -23,7 +23,7 @@ $ubuntuManagedImage2204 = az vmss show --name $VmssNameUbuntu2204 --resource-gro
 
 
 foreach ($managedImage in $managedImages) {
-    if ($managedImage -ne $windowsManagedImage -and $managedImage -ne $ubuntuManagedImage -and $managedImages -ne $windowsManagedImage2022 -and $managedImage -ne $ubuntuManagedImage2204) {
+    if ($managedImage -ne $windowsManagedImage -and $managedImage -ne $ubuntuManagedImage -and $managedImage -ne $windowsManagedImage2022 -and $managedImage -ne $ubuntuManagedImage2204) {
         Write-Host "Found a match, deleting orphaned managed image: $managedImage"
         az image delete --ids $managedImage | Out-Null
     }
