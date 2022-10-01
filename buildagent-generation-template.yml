@@ -62,8 +62,10 @@ jobs:
         $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "linux" } else { "win" }
         $OsType = if ($ImageType.StartsWith("ubuntu")) { "Linux" } else { "Windows" }
         $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
-        $TemplateExtension = if ($ImageType.StartsWith("ubuntu2204")) { "pkr.hcl" } else { "json" }
-        $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.$TemplateExtension"
+        $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.pkr.hcl"
+        if ( -not (Test-Path $TemplatePath) ) {
+            $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.json"
+        }
         $ImageReadmeNameConcat = "${{ parameters.image_type }}-Readme.md"
         $ImageReadmeName = $ImageReadmeNameConcat.Substring(0,1).ToUpper()+$ImageReadmeNameConcat.Substring(1)
         Write-Host "##vso[task.setvariable variable=TemplateDirectoryPath;]$TemplateDirectoryPath"
