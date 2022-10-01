@@ -21,22 +21,6 @@ variables:
 - group: ${{ parameters.variable_group }}
 
 jobs:
-- job:
-  displayName: Cleanup orphaned Managed Images
-  timeoutInMinutes: 600
-  cancelTimeoutInMinutes: 30
-
-  steps:
-  - task: PowerShell@2
-    displayName: 'Cleanup orphaned Managed Images'
-    inputs:
-      targetType: filePath
-      filePath: ./scripts/cleanup-managedimages.ps1
-      arguments: -ClientId $(CLIENT_ID) `
-                        -ClientSecret $(CLIENT_SECRET) `
-                        -ResourceGroup $(AZURE_RESOURCE_GROUP) `
-                        -SubscriptionId $(AZURE_SUBSCRIPTION) `
-                        -AgentsResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
-                        -VmssNameWindows $(VMSS_Windows2019) `
-                        -VmssNameUbuntu $(VMSS_Ubuntu2004) `
-                        -TenantId $(AZURE_TENANT)
+- template: clean-agent-image.yml
+  parameters:
+    variable_group: ${{ parameters.variable_group }}
