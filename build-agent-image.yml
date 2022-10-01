@@ -42,12 +42,12 @@ jobs:
   - ${{ if ne(parameters.repository_base_path, '.') }}:
     - checkout: ${{ parameters.repository_base_path }}
   - task: PowerShell@2
-    displayName: Remove Old Virtual Environments Folder
+    displayName: Remove Old runner-images Folder
     inputs:
       targetType: inline
-      script: if (Test-Path ".\virtual-environments\") { Remove-Item -Recurse -Force ".\virtual-environments\" }
+      script: if (Test-Path ".\runner-images\") { Remove-Item -Recurse -Force ".\runner-images\" }
   - script: | 
-      git clone https://github.com/actions/virtual-environments.git
+      git clone https://github.com/actions/runner-images.git
     displayName: 'Clone the GitHub repository'
 
   - task: PowerShell@2
@@ -60,7 +60,7 @@ jobs:
         $ImageType = "${{ parameters.image_type }}"
         $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "linux" } else { "win" }
         $OsType = if ($ImageType.StartsWith("ubuntu")) { "Linux" } else { "Windows" }
-        $TemplateDirectoryPath = Join-Path (Join-Path "virtual-environments" "images") $TemplateDirectoryName | Resolve-Path
+        $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
         $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.json"
         $ImageReadmeNameConcat = "${{ parameters.image_type }}-Readme.md"
         $ImageReadmeName = $ImageReadmeNameConcat.Substring(0,1).ToUpper()+$ImageReadmeNameConcat.Substring(1)

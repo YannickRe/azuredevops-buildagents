@@ -1,11 +1,11 @@
 # DevOps Build Agents
-This project generates self-hosted build agents based on the [official Microsoft-hosted build agents images](https://github.com/actions/virtual-environments), in an Aure DevOps Pipeline. The resulting Azure Managed Image will be associated to the existing Virtual Machine Scale Set so that new VM's will be using the newly generated image.  This Virtual Machine Scale Set is managed by Azure DevOps as a [Azure Virtual Machine Scale Set Agent](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/agents?view=azure-devops&tabs=browser&WT.mc_id=M365-MVP-5003400#azure-virtual-machine-scale-set-agents).
+This project generates self-hosted build agents based on the [official Microsoft-hosted build agents images](https://github.com/actions/runner-images), in an Aure DevOps Pipeline. The resulting Azure Managed Image will be associated to the existing Virtual Machine Scale Set so that new VM's will be using the newly generated image.  This Virtual Machine Scale Set is managed by Azure DevOps as a [Azure Virtual Machine Scale Set Agent](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/agents?view=azure-devops&tabs=browser&WT.mc_id=M365-MVP-5003400#azure-virtual-machine-scale-set-agents).
 
 Currently supports Windows Server 2019 and Ubuntu 2004 images.
 
 ## Available pipelines
 - __[buildagent-generation.yml](./buildagent-generation.yml)__  
-  - Checkout the latest `main` branch from [actions/virtual-environments](https://github.com/actions/virtual-environments)
+  - Checkout the latest `main` branch from [actions/runner-images](https://github.com/actions/runner-images)
   - Build the VM with Packer  
   - Clean up remaining temporary Azure resources  
   - Turn VM disk into Azure Managed Image  
@@ -74,6 +74,7 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 | CLIENT_ID | Id of the Azure AD application that has appriopriate permissions on the Subscription to create temporary resources and finalizing the Scale Set configuration. See output from scripts above. |
 | CLIENT_SECRET | Application secret to be used fot the connection in combination with the Client Id. See output from scripts above. |
 | VMSS_Windows2019 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2019 |
+| VMSS_Windows2022 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2022 |
 | VMSS_Ubuntu2004 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Ubuntu 20.04 |
 
 ## Pipeline runtime parameters
