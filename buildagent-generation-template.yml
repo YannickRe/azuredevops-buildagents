@@ -185,7 +185,7 @@ jobs:
     - name: VmssName
       value: $[variables.VMSS_Ubuntu2004]
   - ${{ if eq(parameters.image_type, 'ubuntu2204') }}:
-    - name: VmssName
+    - name: VmssNames
       value: $[variables.VMSS_Ubuntu2204]
 
   steps:
@@ -202,5 +202,5 @@ jobs:
                         -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
                         -SubscriptionId $(AZURE_SUBSCRIPTION) `
                         -TenantId $(AZURE_TENANT) `
-                        -VmssName $(VmssName) `
+                        -VmssNames $(VmssNames) `
                         -ManagedImageId $(ManagedImageId)
