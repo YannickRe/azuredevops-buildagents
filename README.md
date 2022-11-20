@@ -70,8 +70,11 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 | AZURE_RESOURCE_GROUP | Resource group containing the Azure Storage Account that will be used by Packer. The resulting Azure Managed Image will also be put in this Resource Group |
 | AZURE_STORAGE_ACCOUNT | Storage Account that Packer will use to store the temporary OSDisk and the resulting sysprepped .vhd |
 | AZURE_SUBSCRIPTION | Subscription ID of the Azure Subscription that is used to host the temporary resources. |
+| BUILD_AGENT_VNET_NAME | Name of the existing VNet to use for the VM created by Packer, put $null if you want packer to create a new one |
+| BUILD_AGENT_VNET_RESOURCE_GROUP | Name of the resource group containing the existing VNet to use for the VM created by Packer, put $null if you don't have this |
+| BUILD_AGENT_SUBNET_NAME | Name of the existing subnet to use for the VM created by Packer, put $null if you don't have this |
 | AZURE_TENANT | Tenant ID of the Azure tenant that has the Azure Resource Groups and Subscription. |
-| CLIENT_ID | Id of the Azure AD application that has appriopriate permissions on the Subscription to create temporary resources and finalizing the Scale Set configuration. See output from scripts above. |
+| CLIENT_ID | Id of the Azure AD application that has appropriate permissions on the Subscription to create temporary resources and finalizing the Scale Set configuration. See output from scripts above. |
 | CLIENT_SECRET | Application secret to be used fot the connection in combination with the Client Id. See output from scripts above. |
 | VMSS_Windows2019 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2019 |
 | VMSS_Windows2022 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2022 |
