@@ -76,6 +76,7 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 | AZURE_TENANT | Tenant ID of the Azure tenant that has the Azure Resource Groups and Subscription. |
 | CLIENT_ID | Id of the Azure AD application that has appropriate permissions on the Subscription to create temporary resources and finalizing the Scale Set configuration. See output from scripts above. |
 | CLIENT_SECRET | Application secret to be used fot the connection in combination with the Client Id. See output from scripts above. |
+| RUN_VALIDATION_FLAG | Wether or not to run a validation on diskspace. Set the value to `false` unless you know what you are doing ;) |
 | VMSS_Windows2019 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2019. Support comma seperated list of names. |
 | VMSS_Windows2022 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2022. Support comma seperated list of names.|
 | VMSS_Ubuntu2004 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Ubuntu 20.04. Support comma seperated list of names. |
