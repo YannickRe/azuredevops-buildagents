@@ -12,10 +12,10 @@ parameters:
   displayName: Variable Group
   type: string
   default: BuildAgents
-- name: agent_pool
-  displayName: Agent Pool
+- name: 'Azure Pipelines'
+  displayName: Agent Pipelines
   type: string
-  default: CI Ubuntu2204
+  default: devopshostpool
 
 trigger: none
 
