@@ -4,9 +4,7 @@ parameters:
   type: string
   default: ubuntu2204
   values:
-  - windows2019
   - windows2022
-  - ubuntu2004
   - ubuntu2204
 - name: variable_group
   displayName: Variable Group
