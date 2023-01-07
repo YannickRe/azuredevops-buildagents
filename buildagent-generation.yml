@@ -2,7 +2,7 @@ parameters:
 - name: image_type
   displayName: Build Agent Image
   type: string
-  default: windows2019
+  default: ubuntu2204
   values:
   - windows2019
   - windows2022
@@ -15,7 +15,7 @@ parameters:
 - name: agent_pool
   displayName: Agent Pool
   type: string
-  default: CI Windows2019
+  default: CI Ubuntu2204
 
 trigger: none
 
