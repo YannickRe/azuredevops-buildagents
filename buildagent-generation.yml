@@ -15,7 +15,7 @@ parameters:
 - name: agent_pool
   displayName: Agent Pool
   type: string
-  default: devopshostpool
+  default: 'Azure Pipelines'
 
 trigger: none
 
