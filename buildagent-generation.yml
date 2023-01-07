@@ -13,7 +13,7 @@ parameters:
 - name: agent_pool
   displayName: Agent Pool
   type: string
-  default: 'Host Pool'
+  default: 'Host Pool - Image'
 
 trigger: none
 
