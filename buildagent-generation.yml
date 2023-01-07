@@ -12,8 +12,8 @@ parameters:
   displayName: Variable Group
   type: string
   default: BuildAgents
-- name: 'Azure Pipelines'
-  displayName: Agent Pipelines
+- name: agent_pool
+  displayName: Agent Pool
   type: string
   default: devopshostpool
 
