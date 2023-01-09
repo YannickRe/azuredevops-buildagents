@@ -8,7 +8,6 @@ param(
     [String] [Parameter (Mandatory=$true)] $ResourceGroup,
     [String] [Parameter (Mandatory=$true)] $GalleryName,
     [String] [Parameter (Mandatory=$true)] $ImageType,
-    [String] [Parameter (Mandatory=$true)] $GalleryVMImageDefinition,
     [String] [Parameter (Mandatory=$true)] $ManagedImageId
 )
 
@@ -18,8 +17,8 @@ az account set -s $SubscriptionId
 $date = Get-Date
 $ImageVersion = $date.ToString("yyyy.MM.dd")
 
-$GalleryVMImageDefinition = "$ImageType-agentpool-full"
-$VmImageVersion = az gallery image version  create -g $ResourceGroup  --gallery-name $GalleryName --$GalleryImageDefinition -name $ImageVersion -manage-image $ManagedImageId
+$GalleryVmImageDefinition = "$ImageType-agentpool-full"
+$VmImageVersion = az gallery image version  create -g $ResourceGroup  --gallery-name $GalleryName --$GalleryVmImageDefinition -name $ImageVersion -manage-image $ManagedImageId
 
 Write-Host "##vso[task.setvariable variable=ManagedImageId;isOutput=true;]$VmImageVersion"
 
