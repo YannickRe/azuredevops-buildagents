@@ -42,10 +42,13 @@ Write-Host "Show Packer Version"
 packer --version
 
 Write-Host "Build $Image VM"
-packer build    -var "client_id=$ClientId" `
+packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
+                -var "client_id=$ClientId" `
                 -var "client_secret=$ClientSecret" `
                 -var "install_password=$InstallPassword" `
                 -var "location=$Location" `
+                -var "resource_group=$ResourceGroup" `
+                -var "storage_account=$StorageAccount" `
                 -var "subscription_id=$SubscriptionId" `
                 -var "temp_resource_group_name=$TempResourceGroupName" `
                 -var "tenant_id=$TenantId" `
