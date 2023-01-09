@@ -81,18 +81,19 @@ jobs:
     inputs:
       targetType: filePath
       filePath: ${{ parameters.repository_base_path }}/scripts/build-image.ps1
-      arguments: -ResourcesNamePrefix $(setVars.ResourcesNamePrefix) `
-                        -ClientId $(CLIENT_ID) `
-                        -ClientSecret $(CLIENT_SECRET) `
-                        -TemplatePath $(TemplatePath) `
-                        -ResourceGroup $(AZURE_RESOURCE_GROUP) `
-                        -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
-                        -SubscriptionId $(AZURE_SUBSCRIPTION) `
-                        -TenantId $(AZURE_TENANT) `
-                        -VirtualNetworkName $(BUILD_AGENT_VNET_NAME) `
-                        -VirtualNetworkRG $(BUILD_AGENT_VNET_RESOURCE_GROUP) `
-                        -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME)
-                        -Location $(AZURE_LOCATION)
+      arguments: -ClientId $(CLIENT_ID) `
+                 -ClientSecret $(CLIENT_SECRET) `
+                 -TemplatePath $(TemplatePath) `
+                 -SubscriptionId $(AZURE_SUBSCRIPTION) `
+                 -TenantId $(AZURE_TENANT) `
+                 -VirtualNetworkName $(BUILD_AGENT_VNET_NAME) `
+                 -VirtualNetworkRG $(BUILD_AGENT_VNET_RESOURCE_GROUP) `
+                 -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME) `
+                 -Location $(AZURE_LOCATION) `
+                 -ManagedImageResourceGroupName $(AZURE_SHARED_GALLERY_RESOURCE_GROUP) `
+                 -ManagedImageSharedImageGalleryId $(AZURE_GALLERY_RESOURCE_ID) `
+                 -ManagedImageName $(ImageType)-agentpool-full 
+
     env:
       PACKER_LOG: 1
       PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
