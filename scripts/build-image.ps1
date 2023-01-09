@@ -59,18 +59,18 @@ packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
                 -var "managed_image_shared_image_gallery_id=$ManagedImageSharedImageGalleryId" `
                 -color=false `
                 $TemplatePath`
-                | Foreach-Object { 
-                    $currentString = $_
-                    if ($currentString -match '(OSDiskUri|OSDiskUriReadOnlySas|TemplateUri|TemplateUriReadOnlySas|AMI|ManagedImageId|ManagedImageName|ManagedImageResourceGroupName|ManagedImageLocation|ManagedImageSharedImageGalleryId): (.*)') {
-                        $varName = $Matches[1]
-                        $varValue = $Matches[2]
-                        Write-Host "##vso[task.setvariable variable=$varName;isOutput=true;]$varValue"
-                    }
-                    Write-Output $_ 
-                } | Where-Object {
-                    #Filter sensitive data from Packer logs
-                    $currentString = $_
-        
-                    $sensitiveString = $SensitiveData | Where-Object { $currentString -match $_ }
-                    $sensitiveString -eq $null
-                }
+        | Foreach-Object { 
+            $currentString = $_
+            if ($currentString -match '(OSDiskUri|OSDiskUriReadOnlySas|TemplateUri|TemplateUriReadOnlySas|AMI|ManagedImageId|ManagedImageName|ManagedImageResourceGroupName|ManagedImageLocation|ManagedImageSharedImageGalleryId): (.*)') {
+                $varName = $Matches[1]
+                $varValue = $Matches[2]
+                Write-Host "##vso[task.setvariable variable=$varName;isOutput=true;]$varValue"
+            }
+            Write-Output $_ 
+        } | Where-Object {
+            #Filter sensitive data from Packer logs
+            $currentString = $_
+
+            $sensitiveString = $SensitiveData | Where-Object { $currentString -match $_ }
+            $sensitiveString -eq $null
+        }
