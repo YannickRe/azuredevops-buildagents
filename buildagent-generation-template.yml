@@ -95,7 +95,7 @@ jobs:
                  -Location $(AZURE_LOCATION) `
                  -ManagedImageResourceGroupName $(AZURE_SHARED_GALLERY_RESOURCE_GROUP) `
                  -ManagedImageName ${{ parameters.Image_Type }}-agentpool-full `
-                 -ManagedImageSharedImageGalleryId $(AZURE_GALLERY_RESOURCE_ID)/images/${{ parameters.Image_Type }}-agentpool-full 
+                 -ManagedImageSharedImageGalleryId /subscriptions/c5882e7a-ebcd-42ca-86a6-a621b94f324e/resourceGroups/debont-gallery-rg/providers/Microsoft.Compute/galleries/debont.devops.gal/images/windows2022-agentpool-full
     env:
       PACKER_LOG: 1
       PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
