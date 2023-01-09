@@ -47,6 +47,8 @@ packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
                 -var "client_secret=$ClientSecret" `
                 -var "install_password=$InstallPassword" `
                 -var "location=$Location" `
+                -var "resource_group=$ResourceGroup" `
+                -var "storage_account=$StorageAccount" `
                 -var "subscription_id=$SubscriptionId" `
                 -var "temp_resource_group_name=$TempResourceGroupName" `
                 -var "tenant_id=$TenantId" `
@@ -58,7 +60,7 @@ packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
                 -var "managed_image_name=$ManagedImageName" `
                 -var "managed_image_shared_image_gallery_id=$ManagedImageSharedImageGalleryId" `
                 -color=false `
-                $TemplatePath`
+                $TemplatePath `
         | Foreach-Object { 
             $currentString = $_
             if ($currentString -match '(OSDiskUri|OSDiskUriReadOnlySas|TemplateUri|TemplateUriReadOnlySas|AMI|ManagedImageId|ManagedImageName|ManagedImageResourceGroupName|ManagedImageLocation|ManagedImageSharedImageGalleryId): (.*)') {
