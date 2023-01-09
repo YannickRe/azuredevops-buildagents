@@ -93,10 +93,7 @@ jobs:
                  -VirtualNetworkRG $(BUILD_AGENT_VNET_RESOURCE_GROUP) `
                  -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME) `
                  -Location $(AZURE_LOCATION) `
-                 -ManagedImageResourceGroupName $(AZURE_SHARED_GALLERY_RESOURCE_GROUP) `
-                 -ManagedImageName ${{ parameters.Image_Type }}-agentpool-full `
-                 -ManagedImageSharedImageGalleryId $(AZURE_GALLERY_RESOURCE_ID)/images/${{ parameters.Image_Type }}-agentpool-full
-                
+             
     env:
       PACKER_LOG: 1
       PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
