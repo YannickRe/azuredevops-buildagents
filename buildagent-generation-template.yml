@@ -94,7 +94,6 @@ jobs:
                  -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME) `
                  -Location $(AZURE_LOCATION) `
                  -ManagedImageResourceGroupName $(AZURE_SHARED_GALLERY_RESOURCE_GROUP) `
-                 -ManagedImageLocation $(AZURE_LOCATION) `
                  -ManagedImageName ${{ parameters.Image_Type }}-agentpool-full `
                  -ManagedImageSharedImageGalleryId $(AZURE_GALLERY_RESOURCE_ID) `
 
