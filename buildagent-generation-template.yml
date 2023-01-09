@@ -84,6 +84,8 @@ jobs:
       arguments: -ResourcesNamePrefix $(setVars.ResourcesNamePrefix) `
                  -ClientId $(CLIENT_ID) `
                  -ClientSecret $(CLIENT_SECRET) `
+                 -ResourceGroup $(AZURE_RESOURCE_GROUP) `
+                 -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
                  -TemplatePath $(TemplatePath) `
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
