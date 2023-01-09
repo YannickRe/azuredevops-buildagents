@@ -56,7 +56,7 @@ packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
                 -var "run_validation_diskspace=$env:RUN_VALIDATION_FLAG" `
                 -var "managed_image_resource_group_name=$ManagedImageResourceGroupName" `
                 -var "managed_image_name=$ManagedImageName" `
-                $ManagedImageLocation                -var "managed_image_shared_image_gallery_id=$ManagedImageSharedImageGalleryId" `
+                -var "managed_image_shared_image_gallery_id=$ManagedImageSharedImageGalleryId" `
                 -color=false `
                 $TemplatePath`
             | Where-Object {
