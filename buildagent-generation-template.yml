@@ -85,8 +85,6 @@ jobs:
                  -ClientId $(CLIENT_ID) `
                  -ClientSecret $(CLIENT_SECRET) `
                  -TemplatePath $(TemplatePath) `
-                 -ResourceGroup $(AZURE_RESOURCE_GROUP) `
-                 -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
                  -VirtualNetworkName $(BUILD_AGENT_VNET_NAME) `
