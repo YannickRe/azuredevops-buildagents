@@ -29,10 +29,10 @@ parameters:
 jobs:
 - job: imagegeneration
   displayName: Image Generation (${{ parameters.image_type }})
-  ${{ if ne(parameters.depends_on, ' ') }}:
-    dependsOn: ${{ parameters.depends_on }}
-  timeoutInMinutes: 600
-  cancelTimeoutInMinutes: 30
+  #${{ if ne(parameters.depends_on, ' ') }}:
+  #  dependsOn: ${{ parameters.depends_on }}
+  timeoutInMinutes: '600'
+  cancelTimeoutInMinutes: '30'
   variables:
     - group: ${{ parameters.variable_group }}
   pool: 
@@ -40,8 +40,8 @@ jobs:
 
   steps:
   - checkout: self
-  - ${{ if ne(parameters.repository_base_path, '.') }}:
-    - checkout: ${{ parameters.repository_base_path }}
+  #- ${{ if ne(parameters.repository_base_path, '.') }}:
+  #  - checkout: ${{ parameters.repository_base_path }}
   - task: PowerShell@2
     displayName: Remove Old runner-images Folder
     inputs:
@@ -94,7 +94,9 @@ jobs:
                  -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME) `
                  -Location $(AZURE_LOCATION) `
                  -ManagedImageResourceGroupName $(AZURE_SHARED_GALLERY_RESOURCE_GROUP) `
+                 -ManagedImageName ${{ parameters.Image_Type }}-agentpool-temp `
                  -ManagedImageSharedImageGalleryId $(AZURE_GALLERY_RESOURCE_ID)/images/${{ parameters.Image_Type }}-agentpool-full
+                
     env:
       PACKER_LOG: 1
       PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
@@ -131,8 +133,8 @@ jobs:
 
 - job: managedimagegeneration
   displayName: Managed Image Generation (${{ parameters.image_type }})
-  timeoutInMinutes: 600
-  cancelTimeoutInMinutes: 30
+  timeoutInMinutes: '600'
+  cancelTimeoutInMinutes: '30'
   pool: 
     name: ${{ parameters.agent_pool }}
   dependsOn: imagegeneration
@@ -149,8 +151,8 @@ jobs:
 
   steps:
   - checkout: self
-  - ${{ if ne(parameters.repository_base_path, '.') }}:
-    - checkout: ${{ parameters.repository_base_path }}
+  #- ${{ if ne(parameters.repository_base_path, '.') }}:
+  #  - checkout: ${{ parameters.repository_base_path }}
   - task: PowerShell@2
     displayName: 'Create Azure Managed Image'
     name: createmanagedimage
