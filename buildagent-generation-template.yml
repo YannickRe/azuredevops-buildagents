@@ -148,7 +148,7 @@ jobs:
   steps:
   - checkout: self
   - ${{ if ne(parameters.repository_base_path, '.') }}:
-  - checkout: ${{ parameters.repository_base_path }}
+    - checkout: ${{ parameters.repository_base_path }}
   - task: PowerShell@2
     displayName: 'Create new Gallery Virtual Machine Image version'
     name: createvmimageversion
