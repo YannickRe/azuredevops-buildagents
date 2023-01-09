@@ -21,7 +21,7 @@ $ImageVersion = $date.ToString("yyyy.MM.dd")
 $GalleryVmImageDefinition = "$ImageType-agentpool-full"
 $VmImageVersion = az gallery image version  create -g $GalleryResourceGroup  --gallery-name $GalleryName --$GalleryVmImageDefinition -name $ImageVersion -manage-image $ManagedImageId
 
-Write-Host "##vso[task.setvariable variable=ManagedImageId;isOutput=true;]$VmImageVersion"
+Write-Host "##vso[task.setvariable variable=VmImageVersion;isOutput=true;]$VmImageVersion"
 
 Write-Host "Update Gallery Image: $GalleryImageDefinition"
 Write-Host "Created VM Image Version: $VMImageversion"
