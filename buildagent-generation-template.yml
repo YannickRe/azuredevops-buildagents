@@ -92,7 +92,7 @@ jobs:
                  -Location $(AZURE_LOCATION) `
                  -ManagedImageResourceGroupName $(AZURE_SHARED_GALLERY_RESOURCE_GROUP) `
                  -ManagedImageSharedImageGalleryId $(AZURE_GALLERY_RESOURCE_ID) `
-                 -ManagedImageName $(Image_Type)-agentpool-full 
+                 -ManagedImageName ${{ parameters.Image_Type }}-agentpool-full 
 
     env:
       PACKER_LOG: 1
