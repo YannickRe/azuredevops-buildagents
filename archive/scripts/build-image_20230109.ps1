@@ -10,10 +10,7 @@ param(
     [String] [Parameter (Mandatory=$true)] $TenantId,
     [String] [Parameter (Mandatory=$false)] $VirtualNetworkName,
     [String] [Parameter (Mandatory=$false)] $VirtualNetworkRG,
-    [String] [Parameter (Mandatory=$false)] $VirtualNetworkSubnet,
-    [String] [Parameter (Mandatory=$false)] $ManagedImageResourceGroupName,
-    [String] [Parameter (Mandatory=$false)] $ManagedImageName,
-    [String] [Parameter (Mandatory=$false)] $ManagedImageSharedImageGalleryId
+    [String] [Parameter (Mandatory=$false)] $VirtualNetworkSubnet
 )
 
 if (-not (Test-Path $TemplatePath))
@@ -48,6 +45,7 @@ packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
                 -var "install_password=$InstallPassword" `
                 -var "location=$Location" `
                 -var "resource_group=$ResourceGroup" `
+                -var "storage_account=$StorageAccount" `
                 -var "subscription_id=$SubscriptionId" `
                 -var "temp_resource_group_name=$TempResourceGroupName" `
                 -var "tenant_id=$TenantId" `
@@ -55,13 +53,17 @@ packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
                 -var "virtual_network_resource_group_name=$VirtualNetworkRG" `
                 -var "virtual_network_subnet_name=$VirtualNetworkSubnet" `
                 -var "run_validation_diskspace=$env:RUN_VALIDATION_FLAG" `
-                -var "managed_image_resource_group_name=$ManagedImageResourceGroupName" `
-                -var "managed_image_name=$ManagedImageName" `
-                -var "managed_image_location=$ManagedImageLocation" `
-                -var "managed_image_shared_image_gallery_id=$ManagedImageSharedImageGalleryId" `
                 -color=false `
-                $TemplatePath`
-            | Where-Object {
+                $TemplatePath `
+        | Foreach-Object { 
+            $currentString = $_
+            if ($currentString -match '(OSDiskUri|OSDiskUriReadOnlySas|TemplateUri|TemplateUriReadOnlySas|AMI|ManagedImageId|ManagedImageName|ManagedImageResourceGroupName|ManagedImageLocation|ManagedImageSharedImageGalleryId): (.*)') {
+                $varName = $Matches[1]
+                $varValue = $Matches[2]
+                Write-Host "##vso[task.setvariable variable=$varName;isOutput=true;]$varValue"
+            }
+            Write-Output $_ 
+        } | Where-Object {
             #Filter sensitive data from Packer logs
             $currentString = $_
 

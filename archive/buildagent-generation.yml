@@ -25,4 +25,4 @@ jobs:
   parameters: 
     image_type: ${{ parameters.image_type }}
     variable_group: ${{ parameters.variable_group }}
-
+    agent_pool: ${{ parameters.agent_pool }}
