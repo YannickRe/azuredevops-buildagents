@@ -24,7 +24,7 @@ $GalleryVmImageDefinition = "$ImageType-agentpool-full"
 $StorageAccountObject = Get-AzStorageAccount -ResourceGroupName $ResourceGroup -Name $StorageAccount 
 $StorageAccountId = $StorageAccountObject.Id
 
-$VmImageVersion = az sig image-version create --resource-group $ResourceGroup --gallery-name $GalleryName --gallery-image-definition $GalleryVmImageDefinition  --gallery-image-version $GalleryImageVersion --os-vhd-uri $OsVhdUri -os-vhd-storage-account $StorageAccountId
+$VmImageVersion = az sig image-version create --resource-group $GalleryResourceGroup --gallery-name $GalleryName --gallery-image-definition $GalleryVmImageDefinition  --gallery-image-version $GalleryImageVersion --os-vhd-uri $OsVhdUri -os-vhd-storage-account $StorageAccountId
 
 Write-Host "##vso[task.setvariable variable=$VmImageVersion;isOutput=true;]$VmImageVersion"
 

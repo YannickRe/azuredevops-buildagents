@@ -167,4 +167,4 @@ jobs:
                  -OsVhdUri $(OSDiskUri) `
                  -OsType $(OsType) `
                  -GalleryName $(GALLERY_NAME)`
-                 -GalleryResourceGroup $(GALLERY_RESOURCEGROUP)
+                 -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP)
