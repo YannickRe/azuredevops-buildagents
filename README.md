@@ -169,3 +169,6 @@ This might be resolved in the near future when changes are made to the images [r
 
 ## Agent Pool Usage
 See documentation for [YAML-based pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/pools-queues?view=azure-devops&tabs=yaml%2cbrowser&WT.mc_id=M365-MVP-5003400#choosing-a-pool-and-agent-in-your-pipeline) and [Classic pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/pools-queues?view=azure-devops&tabs=classic%2cbrowser&WT.mc_id=M365-MVP-5003400#choosing-a-pool-and-agent-in-your-pipeline)
+
+## Azure CLI access denied error on Windows Host Pool
+Please make sure to disable the "Configure VMs to run interactive tests" in your Windows Agent pool setting, otherwise the Azure CLI will generate access denied errors when running a pipeline.
