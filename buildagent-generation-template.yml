@@ -176,7 +176,7 @@ jobs:
   dependsOn: managedimagegeneration
   variables:
   - name: ImageType
-    value: $[ dependencies.imagegeneration.outputs['setVars.ImageType'] ]
+    value: ${{ parameters.image_type }}
   - name: ManagedImageId
     value: $[ dependencies.managedimagegeneration.outputs['createmanagedimage.ManagedImageId'] ]
   - group: ${{ parameters.variable_group }}
