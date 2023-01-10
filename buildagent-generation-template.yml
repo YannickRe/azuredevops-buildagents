@@ -169,8 +169,8 @@ jobs:
 
 - job: createvmimageversion
   displayName: Create New Gallery VMImage Version (${{ parameters.image_type }})
-  timeoutInMinutes: 1800
-  cancelTimeoutInMinutes: 60
+  timeoutInMinutes: 600
+  cancelTimeoutInMinutes: 90
   pool: 
     name: ${{ parameters.agent_pool }}
   dependsOn: managedimagegeneration
