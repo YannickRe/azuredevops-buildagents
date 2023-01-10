@@ -9,7 +9,7 @@ Currently supports Windows Server 2019, Windows Server 2022, Ubuntu 2004 and Ubu
   - Build the VM with Packer  
   - Clean up remaining temporary Azure resources  
   - Turn VM disk into Azure Managed Image  
-  - Update Virtual Machine Scale Set with new Managed Image  
+  - Add Azure Managed Image to Azure Compute Gallery and remove Azure Managed Image
 - __[managedimage-cleanup.yml](./managedimage-cleanup.yml)__  
   - Remove unused Azure Managed Images
 
