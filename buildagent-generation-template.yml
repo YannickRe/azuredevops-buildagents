@@ -127,10 +127,10 @@ jobs:
                      -TenantId $(AZURE_TENANT) `
                      -StorageAccount $(AZURE_STORAGE_ACCOUNT)
 
-- job: createvmimageversion
-  displayName: Create New Gallery VMImage Version (${{ parameters.image_type }})
+- job: managedimagegeneration
+  displayName: Managed Image Generation (${{ parameters.image_type }})
   timeoutInMinutes: 600
-  cancelTimeoutInMinutes: 90
+  cancelTimeoutInMinutes: 30
   pool: 
     name: ${{ parameters.agent_pool }}
   dependsOn: imagegeneration
@@ -150,21 +150,52 @@ jobs:
   - ${{ if ne(parameters.repository_base_path, '.') }}:
     - checkout: ${{ parameters.repository_base_path }}
   - task: PowerShell@2
-    displayName: 'Create new Gallery Virtual Machine Image version'
-    name: createvmimageversion
+    displayName: 'Create Azure Managed Image'
+    name: createmanagedimage
+    inputs:
+      targetType: filePath
+      filePath: ${{ parameters.repository_base_path }}/scripts/create-managedimage.ps1
+      arguments: -ResourcesNamePrefix $(ResourcesNamePrefix) `
+                        -ClientId $(CLIENT_ID) `
+                        -ClientSecret $(CLIENT_SECRET) `
+                        -ResourceGroup $(AZURE_RESOURCE_GROUP) `
+                        -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
+                        -SubscriptionId $(AZURE_SUBSCRIPTION) `
+                        -TenantId $(AZURE_TENANT) `
+                        -Location $(AZURE_LOCATION) `
+                        -ImageType $(ImageType) `
+                        -OsVhdUri $(OSDiskUri) `
+                        -OsType $(OsType)
+
+- job: createvmimageversion
+  displayName: Create New Gallery VMImage Version (${{ parameters.image_type }})
+  timeoutInMinutes: 1800
+  cancelTimeoutInMinutes: 60
+  pool: 
+    name: ${{ parameters.agent_pool }}
+  dependsOn: managedimagegeneration
+  variables:
+  - name: ImageType
+    value: $[ dependencies.imagegeneration.outputs['setVars.ImageType'] ]
+  - name: ManagedImageId
+    value: $[ dependencies.managedimagegeneration.outputs['createmanagedimage.ManagedImageId'] ]
+  - group: ${{ parameters.variable_group }}
+
+  steps:
+  - checkout: self
+  - ${{ if ne(parameters.repository_base_path, '.') }}:
+    - checkout: ${{ parameters.repository_base_path }}
+  - task: PowerShell@2
+    displayName: 'Create new Gallery Virtual Machine Image versioni'
     inputs:
       targetType: filePath
       filePath: ${{ parameters.repository_base_path }}/scripts/create-gallery-vmimageversion.ps1
-      arguments: -ResourcesNamePrefix $(ResourcesNamePrefix) `
-                 -ClientId $(CLIENT_ID) `
+      arguments: -ClientId $(CLIENT_ID) `
                  -ClientSecret $(CLIENT_SECRET) `
-                 -ResourceGroup $(AZURE_RESOURCE_GROUP) `
-                 -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
+                 -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
-                 -Location $(AZURE_LOCATION) `
-                 -ImageType $(ImageType) `
-                 -OsVhdUri $(OSDiskUri) `
-                 -OsType $(OsType) `
-                 -GalleryName $(GALLERY_NAME)`
-                 -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP)
+                 -GalleryName $(GALLERY_NAME) `
+                 -GalleryResourceGroup $(GALLERY_RESOURCEGROUP)
+                 -ImageType $ImageType
+                 -ManagedImageId $(ManagedImageId)
