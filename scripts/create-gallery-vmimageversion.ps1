@@ -16,13 +16,15 @@ az login --service-principal --username $ClientId --password $ClientSecret --ten
 az account set -s $SubscriptionId
 
 $date = Get-Date
-$ImageVersion = $date.ToString("yyyy.MM.dd")
-
+$GalleryImageVersion = $date.ToString("yyyy.MM.dd")
 $GalleryVmImageDefinition = "$ImageType-agentpool-full"
-$VmImageVersion = az gallery image version  create -g $GalleryResourceGroup  --gallery-name $GalleryName --gallery-image-definition $GalleryVmImageDefinition --name $ImageVersion --manage-image $ManagedImageId
+
+$VmImageVersion = az sig image-version create -g $GalleryResourceGroup  --gallery-name $GalleryName --gallery-image-definition $GalleryVmImageDefinition --gallery-image-version $GalleryImageVersion --managed-image $ManagedImageId --target-regions $Location
 
 Write-Host "##vso[task.setvariable variable=VmImageVersion;isOutput=true;]$VmImageVersion"
 
 Write-Host "Update Gallery Image: $GalleryImageDefinition"
 Write-Host "Created VM Image Version: $VMImageversion"
 
+az image delete --ids $managedImageId | Out-Null
+Write-Host "Cleanup Temporary Created Managed Image"

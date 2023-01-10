@@ -199,3 +199,8 @@ jobs:
                  -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) ``
                  -ImageType $(ImageType) `
                  -ManagedImageId $(ManagedImageId)
+
+- job:
+  template: managedimage-cleanup-template.yml
+    parameters:
+      variable_group: ${{ parameters.variable_group }}
