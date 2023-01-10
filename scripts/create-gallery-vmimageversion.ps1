@@ -27,4 +27,4 @@ Write-Host "Update Gallery Image: $GalleryImageDefinition"
 Write-Host "Created VM Image Version: $VMImageversion"
 
 az image delete --ids $managedImageId | Out-Null
-Write-Host "Cleanup Temporary Created Managed Image"
+Write-Host "Cleanup temporary created Managed Image"
