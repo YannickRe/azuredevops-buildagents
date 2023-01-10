@@ -196,6 +196,6 @@ jobs:
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
                  -GalleryName $(GALLERY_NAME) `
-                 -GalleryResourceGroup $(GALLERY_RESOURCEGROUP)
+                 -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP)
                  -ImageType $ImageType
                  -ManagedImageId $(ManagedImageId)
