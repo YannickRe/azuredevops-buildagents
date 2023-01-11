@@ -9,7 +9,7 @@ Currently supports Windows Server 2019, Windows Server 2022, Ubuntu 2004 and Ubu
   - Build the VM with Packer  
   - Clean up remaining temporary Azure resources  
   - Turn VM disk into Azure Managed Image  
-  - Update Virtual Machine Scale Set with new Managed Image  
+  - Add Azure Managed Image to Azure Compute Gallery and remove Azure Managed Image
 - __[managedimage-cleanup.yml](./managedimage-cleanup.yml)__  
   - Remove unused Azure Managed Images
 
@@ -77,10 +77,8 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 | CLIENT_ID | Id of the Azure AD application that has appropriate permissions on the Subscription to create temporary resources and finalizing the Scale Set configuration. See output from scripts above. |
 | CLIENT_SECRET | Application secret to be used fot the connection in combination with the Client Id. See output from scripts above. |
 | RUN_VALIDATION_FLAG | Wether or not to run a validation on diskspace. Set the value to `false` unless you know what you are doing ;) |
-| VMSS_Windows2019 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2019. Support comma seperated list of names. |
-| VMSS_Windows2022 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2022. Support comma seperated list of names.|
-| VMSS_Ubuntu2004 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Ubuntu 20.04. Support comma seperated list of names. |
-| VMSS_Ubuntu2204 | Name of the Azure Virtual Machine Scale Set that will run Build Agents on Ubuntu 22.04. Support comma seperated list of names. |
+| GALLERY_NAME |Name of the Azure Compute Gallery to store images for Agent Pool VM Scale Sets.
+| GALLERY_RESOURCE_GROUP|Name of the resource group containing the Azure Compute Gallery. 
 
 ## Pipeline runtime parameters
 ### Build Agent Generation
@@ -171,3 +169,6 @@ This might be resolved in the near future when changes are made to the images [r
 
 ## Agent Pool Usage
 See documentation for [YAML-based pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/pools-queues?view=azure-devops&tabs=yaml%2cbrowser&WT.mc_id=M365-MVP-5003400#choosing-a-pool-and-agent-in-your-pipeline) and [Classic pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/pools-queues?view=azure-devops&tabs=classic%2cbrowser&WT.mc_id=M365-MVP-5003400#choosing-a-pool-and-agent-in-your-pipeline)
+
+## Azure CLI access denied error on Windows Host Pool
+Please make sure to disable the "Configure VMs to run interactive tests" in your Windows Agent pool setting, otherwise the Azure CLI will generate access denied errors when running a pipeline.
