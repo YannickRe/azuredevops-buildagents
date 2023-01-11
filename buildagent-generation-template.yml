@@ -197,6 +197,6 @@ jobs:
                  -TenantId $(AZURE_TENANT) `
                  -Location $(AZURE_LOCATION) `
                  -GalleryName $(GALLERY_NAME) `
-                 -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) ``
+                 -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
                  -ImageType $(ImageType) `
                  -ManagedImageId $(ManagedImageId)
