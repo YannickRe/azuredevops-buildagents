@@ -23,7 +23,7 @@ Create (if you don´t have one) an Azure Computer Gallery in your Azure subscrip
 - windows2019-agentpool-full (OS: Windows)
 - windows2022-agentpool-full (OS: Windows)  
 
-This step will automated in a later stage.
+This step will be automated in a later stage.
 
 ### Azure Resources for Packer execution
 The Azure resources are created with the [Azure PowerShell Module](https://docs.microsoft.com/en-us/powershell/azure/new-azureps-module-az?WT.mc_id=M365-MVP-5003400)  
