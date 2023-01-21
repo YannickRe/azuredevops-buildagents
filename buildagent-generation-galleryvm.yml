@@ -24,7 +24,8 @@ parameters:
   displayName: Scripts Path
   type: string
   default: .
-  
+
+jobs: 
 - job: createvmimageversion
   displayName: Create New Gallery VMImage Version (${{ parameters.image_type }})
   timeoutInMinutes: 600

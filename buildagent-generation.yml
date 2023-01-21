@@ -23,12 +23,18 @@ variables:
   - group: ${{ parameters.variable_group }}
 
 stages:
-  #- template: buildagent-generation-template.yml
-  #  parameters: 
-  #   image_type: ${{ parameters.image_type }}
-  #   variable_group: ${{ parameters.variable_group }}
-  #   agent_pool: ${{ parameters.agent_pool }}
+  - stage: buildagent-template-vm
+    displayName: 'Build Agent Template VM'
+    jobs: 
+    - template: buildagent-generation-template.yml
+      parameters: 
+        image_type: ${{ parameters.image_type }}
+        variable_group: ${{ parameters.variable_group }}
+        agent_pool: ${{ parameters.agent_pool }}
 
+  - stage: buildagent-gallery-vm
+    displayName:  'Create Gallery Image Version VM'
+    dependsOn: buildagent-template-vm
   - template: buildagent-generation-galleryvm.yml
     parameters: 
       image_type: ${{ parameters.image_type }}
