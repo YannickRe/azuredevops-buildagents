@@ -23,11 +23,11 @@ variables:
   - group: ${{ parameters.variable_group }}
 
 jobs:
-  - template: buildagent-generation-template.yml
-    parameters: 
-     image_type: ${{ parameters.image_type }}
-     variable_group: ${{ parameters.variable_group }}
-     agent_pool: ${{ parameters.agent_pool }}
+  #- template: buildagent-generation-template.yml
+  #  parameters: 
+  #   image_type: ${{ parameters.image_type }}
+  #   variable_group: ${{ parameters.variable_group }}
+  #   agent_pool: ${{ parameters.agent_pool }}
 
   - template: buildagent-generation-galleryvm.yml
     parameters: 
