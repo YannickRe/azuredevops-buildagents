@@ -23,7 +23,7 @@ variables:
   - group: ${{ parameters.variable_group }}
 
 jobs:
-- template: buildagent-generation-template.yml
+- template: buildagent-generation-template-beta.yml
   parameters: 
     image_type: ${{ parameters.image_type }}
     variable_group: ${{ parameters.variable_group }}
