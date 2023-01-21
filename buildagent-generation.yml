@@ -33,7 +33,7 @@ stages:
         agent_pool: ${{ parameters.agent_pool }}
 
   - stage: convert_template_to_managedvm
-    displayName: 'Convert Template to Managed Build Agent VM'
+    displayName: 'Convert Template to Managed VM'
     dependsOn: buildagent_template_vm
     jobs:
     - template: buildagent-generation-managedvm.yml
