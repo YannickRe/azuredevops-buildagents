@@ -25,7 +25,7 @@ parameters:
   type: string
   default: .
 
-jobs: 
+jobs:
 - job: createvmimageversion
   displayName: Create New Gallery VMImage Version (${{ parameters.image_type }})
   timeoutInMinutes: 600
