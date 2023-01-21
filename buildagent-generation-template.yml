@@ -25,7 +25,6 @@ parameters:
   type: string
   default: .
   
-
 jobs:
 - job: imagegeneration
   displayName: Image Generation (${{ parameters.image_type }})

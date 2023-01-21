@@ -22,7 +22,7 @@ trigger: none
 variables:
   - group: ${{ parameters.variable_group }}
 
-jobs:
+stages:
   #- template: buildagent-generation-template.yml
   #  parameters: 
   #   image_type: ${{ parameters.image_type }}
