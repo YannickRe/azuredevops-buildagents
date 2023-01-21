@@ -34,7 +34,7 @@ stages:
 
   - stage: buildagentgalleryvm
     displayName:  'Create Gallery Image Version VM'
-    dependsOn: buildagent-template-vm
+    dependsOn: buildagenttemplatevm
     jobs:
     - template: buildagent-generation-galleryvm.yml
       parameters: 
