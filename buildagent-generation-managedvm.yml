@@ -32,7 +32,6 @@ jobs:
   cancelTimeoutInMinutes: 30
   pool: 
     name: ${{ parameters.agent_pool }}
-  dependsOn: imagegeneration
   variables:
   - name: OsType
     value: $[ dependencies.imagegeneration.outputs['setVars.OsType'] ]
