@@ -174,7 +174,7 @@ stages:
     cancelTimeoutInMinutes: '90'
     pool: 
       name: ${{ parameters.agent_pool }}
-    dependsOn: managedimagegeneration
+    #dependsOn: managedimagegeneration
     variables:
     - name: ImageType
       value: ${{ parameters.image_type }}
