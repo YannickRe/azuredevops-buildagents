@@ -31,7 +31,8 @@ stages:
   jobs:
   - job: imagegeneration
     displayName: Image Generation (${{ parameters.image_type }})
-    dependsOn: ${{ parameters.depends_on }}
+    ${{ if ne(parameters.depends_on, ' ') }}:
+      dependsOn: ${{ parameters.depends_on }}
     timeoutInMinutes: '600'
     cancelTimeoutInMinutes: '30'
     variables:
