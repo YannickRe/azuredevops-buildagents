@@ -23,7 +23,7 @@ variables:
   - group: ${{ parameters.variable_group }}
 
 stages:
-  - stage: buildagenttemplatevm
+  - stage: buildagent_template_vm
     displayName: 'Build Agent Template VM'
     jobs: 
     - template: buildagent-generation-template.yml
@@ -32,9 +32,19 @@ stages:
         variable_group: ${{ parameters.variable_group }}
         agent_pool: ${{ parameters.agent_pool }}
 
-  - stage: buildagentgalleryvm
+  - stage: convert_template_to_managedvm
+    displayName: 'Convert Template to Managed Build Agent VM'
+    dependsOn: buildagent_template_vm
+    jobs:
+    - template: buildagent-generation-managedvm.yml
+      parameters: 
+        image_type: ${{ parameters.image_type }}
+        variable_group: ${{ parameters.variable_group }}
+        agent_pool: ${{ parameters.agent_pool }}
+
+  - stage: create_gallery_imagevm
     displayName:  'Create Gallery Image Version VM'
-    dependsOn: buildagenttemplatevm
+    dependsOn: convert_template_to_managedvm
     jobs:
     - template: buildagent-generation-galleryvm.yml
       parameters: 
