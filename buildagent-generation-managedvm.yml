@@ -34,14 +34,15 @@ jobs:
     name: ${{ parameters.agent_pool }}
   variables:
   - name: OsType
-    value: $[ dependencies.imagegeneration.outputs['setVars.OsType'] ]
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.OsType'] ]
   - name: ImageType
-    value: $[ dependencies.imagegeneration.outputs['setVars.ImageType'] ]
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ImageType'] ]
   - name: ResourcesNamePrefix
-    value: $[ dependencies.imagegeneration.outputs['setVars.ResourcesNamePrefix'] ]
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ResourcesNamePrefix'] ]
   - name: OSDiskUri
-    value: $[ dependencies.imagegeneration.outputs['buildVm.OSDiskUri'] ]
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs[['buildVm.OSDiskUri'] ]
   - group: ${{ parameters.variable_group }}
+
 
   steps:
   - checkout: self
@@ -54,13 +55,13 @@ jobs:
       targetType: filePath
       filePath: ${{ parameters.repository_base_path }}/scripts/create-managedimage.ps1
       arguments: -ResourcesNamePrefix $(ResourcesNamePrefix) `
-                        -ClientId $(CLIENT_ID) `
-                        -ClientSecret $(CLIENT_SECRET) `
-                        -ResourceGroup $(AZURE_RESOURCE_GROUP) `
-                        -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
-                        -SubscriptionId $(AZURE_SUBSCRIPTION) `
-                        -TenantId $(AZURE_TENANT) `
-                        -Location $(AZURE_LOCATION) `
-                        -ImageType $(ImageType) `
-                        -OsVhdUri $(OSDiskUri) `
-                        -OsType $(OsType)
+                 -ClientId $(CLIENT_ID) `
+                 -ClientSecret $(CLIENT_SECRET) `
+                 -ResourceGroup $(AZURE_RESOURCE_GROUP) `
+                 -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
+                 -SubscriptionId $(AZURE_SUBSCRIPTION) `
+                 -TenantId $(AZURE_TENANT) `
+                 -Location $(AZURE_LOCATION) `
+                 -ImageType $(ImageType) `
+                 -OsVhdUri $(OSDiskUri) `
+                 -OsType $(OsType)
