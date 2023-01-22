@@ -51,7 +51,7 @@ stages:
 
   - stage: create_gallery_imagevm
     displayName:  'Create Gallery Image Version VM'
-    condition: and(succeeded('convert_template_to_managevm'), eq(variable['${{ parameters.update_type }}'], 'galleryvm')
+    condition: and(succeeded('convert_template_to_managevm'), eq(variables['${{ parameters.update_type }}'], 'galleryvm')
     dependsOn: convert_template_to_managedvm
     jobs:
     - template: buildagent-generation-galleryvm.yml
