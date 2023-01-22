@@ -29,8 +29,8 @@ parameters:
 jobs:
 - job: updatevmss
   displayName: Update Virtual Machine Scale Set (${{ parameters.image_type }})
-  timeoutInMinutes: ´600'
-  cancelTimeoutInMinutes: '30'
+  timeoutInMinutes: 600
+  cancelTimeoutInMinutes: 30
   pool: 
     name: ${{ parameters.agent_pool }}
   dependsOn: managedimagegeneration

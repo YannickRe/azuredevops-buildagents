@@ -28,8 +28,8 @@ parameters:
 jobs:
 - job: createvmimageversion
   displayName: Create New Gallery VMImage Version (${{ parameters.image_type }})
-  timeoutInMinutes: '600'
-  cancelTimeoutInMinutes: '90'
+  timeoutInMinutes: 600
+  cancelTimeoutInMinutes: 90
   pool: 
     name: ${{ parameters.agent_pool }}
   variables:
