@@ -28,8 +28,8 @@ parameters:
 jobs:
 - job: managedimagegeneration
   displayName: Managed Image Generation (${{ parameters.image_type }})
-  timeoutInMinutes: 600
-  cancelTimeoutInMinutes: 30
+  timeoutInMinutes: '600'
+  cancelTimeoutInMinutes: '30'
   pool: 
     name: ${{ parameters.agent_pool }}
   variables:
@@ -42,7 +42,6 @@ jobs:
   - name: OSDiskUri
     value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs[['buildVm.OSDiskUri'] ]
   - group: ${{ parameters.variable_group }}
-
 
   steps:
   - checkout: self

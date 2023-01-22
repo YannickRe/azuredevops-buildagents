@@ -36,7 +36,7 @@ jobs:
   - name: ImageType
     value: ${{ parameters.image_type }}
   - name: ManagedImageId
-    value: $[ dependencies.managedimagegeneration.outputs['createmanagedimage.ManagedImageId'] ]
+    value: $[stageDependencies.convert_template_to_managedvm.managedimagegeneration.outputs['createmanagedimage.ManagedImageId'] ]
   - group: ${{ parameters.variable_group }}
 
   steps:
