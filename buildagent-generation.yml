@@ -63,7 +63,7 @@ stages:
   - stage: update_vmss_imagevm
     displayName:  'Update VM Scale Set to new Image'
     dependsOn: convert_template_to_managedvm
-    condition: and(succeeded('convert_template_to_managevm'), eq(variable['${{ parameters.update_type }}'], 'vmss')
+    condition: and(succeeded('convert_template_to_managevm'), eq(variables['${{ parameters.update_type }}'], 'vmss')
     jobs:
     - template: buildagent-generation-update-vmss.yml
       parameters: 
