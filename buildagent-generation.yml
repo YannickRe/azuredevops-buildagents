@@ -19,7 +19,7 @@ parameters:
 - name: update_type
   displayName: 'Updatetype VM Scale Set or Gallary VM Image ?'
   type: string
-  default: galleryvmimage
+  default: galleryvm
   values:
   - galleryvm
   - vmss
