@@ -51,7 +51,7 @@ stages:
 
   - stage: create_gallery_imagevm
     displayName:  'Create Gallery Image Version VM'
-    condition: and(succeeded('convert_template_to_managevm'), eq(${{ parameters.update_type }}, 'galleryvm'))
+    condition: and(succeeded('convert_template_to_managevm'), eq(variables[${{ parameters.update_type }}], 'galleryvm'))
     dependsOn: convert_template_to_managedvm
     jobs:
     - template: buildagent-generation-galleryvm.yml
@@ -63,7 +63,7 @@ stages:
   - stage: update_vmss_imagevm
     displayName:  'Update VM Scale Set to new Image'
     dependsOn: convert_template_to_managedvm
-    condition: and(succeeded('convert_template_to_managevm'), eq(${{ parameters.update_type }}, 'vmss'))
+    condition: and(succeeded('convert_template_to_managevm'), eq(variables[${{ parameters.update_type }}], 'vmss'))
     jobs:
     - template: buildagent-generation-update-vmss.yml
       parameters: 
