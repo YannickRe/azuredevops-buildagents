@@ -17,7 +17,7 @@ parameters:
   type: string
   default: 'Host Pool - Image'
 - name: update_type
-  displayName: 'Updatetype VM Scale Set or Gallary VM Image ?'
+  displayName: 'Updatetype vmss (VM Scale Set) or galleryvm (Gallary VM Image) ?'
   type: string
   default: galleryvm
   values:
