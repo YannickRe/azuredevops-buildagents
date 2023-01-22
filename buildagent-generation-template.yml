@@ -30,8 +30,8 @@ jobs:
   displayName: Image Generation (${{ parameters.image_type }})
   ${{ if ne(parameters.depends_on, ' ') }}:
     dependsOn: ${{ parameters.depends_on }}
-  timeoutInMinutes: 600
-  cancelTimeoutInMinutes: 30
+  timeoutInMinutes: '600'
+  cancelTimeoutInMinutes: '30'
   variables:
     - group: ${{ parameters.variable_group }}
   pool: 
@@ -81,17 +81,17 @@ jobs:
       targetType: filePath
       filePath: ${{ parameters.repository_base_path }}/scripts/build-image.ps1
       arguments: -ResourcesNamePrefix $(setVars.ResourcesNamePrefix) `
-                        -ClientId $(CLIENT_ID) `
-                        -ClientSecret $(CLIENT_SECRET) `
-                        -TemplatePath $(TemplatePath) `
-                        -ResourceGroup $(AZURE_RESOURCE_GROUP) `
-                        -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
-                        -SubscriptionId $(AZURE_SUBSCRIPTION) `
-                        -TenantId $(AZURE_TENANT) `
-                        -VirtualNetworkName $(BUILD_AGENT_VNET_NAME) `
-                        -VirtualNetworkRG $(BUILD_AGENT_VNET_RESOURCE_GROUP) `
-                        -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME)
-                        -Location $(AZURE_LOCATION)
+                 -ClientId $(CLIENT_ID) `
+                 -ClientSecret $(CLIENT_SECRET) `
+                 -TemplatePath $(TemplatePath) `
+                 -ResourceGroup $(AZURE_RESOURCE_GROUP) `
+                 -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
+                 -SubscriptionId $(AZURE_SUBSCRIPTION) `
+                 -TenantId $(AZURE_TENANT) `
+                 -VirtualNetworkName $(BUILD_AGENT_VNET_NAME) `
+                 -VirtualNetworkRG $(BUILD_AGENT_VNET_RESOURCE_GROUP) `
+                 -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME)
+                 -Location $(AZURE_LOCATION)
     env:
       PACKER_LOG: 1
       PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
@@ -109,8 +109,8 @@ jobs:
       targetType: 'filePath'
       filePath: ${{ parameters.repository_base_path }}/scripts/measure-provisioners-duration.ps1
       arguments: -PackerLogPath "$(Build.ArtifactStagingDirectory)/packer-log.txt" `
-                        -PrefixToPathTrim "$(TemplateDirectoryPath)" `
-                        -PrintTopNLongest 25
+                 -PrefixToPathTrim "$(TemplateDirectoryPath)" `
+                 -PrintTopNLongest 25
 
   - task: PowerShell@2
     displayName: 'Clean up resources'
@@ -119,10 +119,10 @@ jobs:
       targetType: filePath
       filePath: ${{ parameters.repository_base_path }}/scripts/cleanup.ps1
       arguments: -ResourcesNamePrefix $(setVars.ResourcesNamePrefix) `
-                     -ClientId $(CLIENT_ID) `
-                     -ClientSecret $(CLIENT_SECRET) `
-                     -Image $(setVars.ImageType) `
-                     -SubscriptionId $(AZURE_SUBSCRIPTION) `
-                     -TenantId $(AZURE_TENANT) `
-                     -StorageAccount $(AZURE_STORAGE_ACCOUNT)
+                 -ClientId $(CLIENT_ID) `
+                 -ClientSecret $(CLIENT_SECRET) `
+                 -Image $(setVars.ImageType) `
+                 -SubscriptionId $(AZURE_SUBSCRIPTION) `
+                 -TenantId $(AZURE_TENANT) `
+                 -StorageAccount $(AZURE_STORAGE_ACCOUNT)
 
