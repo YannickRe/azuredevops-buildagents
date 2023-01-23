@@ -28,6 +28,8 @@ trigger: none
 
 variables:
   - group: ${{ parameters.variable_group }}
+  - name: update_type
+    value: ${{ parameters.update_type }}
 
 stages:
   - stage: buildagent_template_vm
@@ -50,11 +52,8 @@ stages:
         agent_pool: ${{ parameters.agent_pool }}
 
   - stage: create_gallery_imagevm
-    variables: 
-      deploy_galleryvm: $[eq(variables[${{ parameters.update_type }}], 'galleryvm')]
-
     displayName:  'Create Gallery Image Version VM'
-    condition: and(succeeded(), eq(variables.deploy_galleryvm, 'true'))
+    condition: and(succeeded(), eq(variables.update_type, 'galleryvm'))
     dependsOn: convert_template_to_managedvm
     jobs:
     - template: buildagent-generation-galleryvm.yml
@@ -65,10 +64,8 @@ stages:
 
   - stage: update_vmss_imagevm
     displayName:  'Update VM Scale Set to new Image'
-    variables:
-     deploy_vmss: $[eq(variables[${{ parameters.update_type }}], 'vmss')]
     dependsOn: convert_template_to_managedvm
-    condition: and(succeeded(), eq(variables.deploy_vmss, 'true'))
+    condition: and(succeeded(), eq(variables.update_type, 'vmss'))
     jobs:
     - template: buildagent-generation-update-vmss.yml
       parameters: 
