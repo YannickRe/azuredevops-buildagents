@@ -100,6 +100,7 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 - __Build Agent Image__: which image to build, choice between `Windows Server 2019`, `Windows Server 2022`, `Ubuntu 20.04` and `Ubuntu 22.04`  
 - __Variable Group__: name of the Variable Group containing the variables necessary for execution
 - __Agent Pool__: the Agent Pool to use for running the pipeline
+- __Update Method__: select type of deployment. *vmss* (VM Scale Set) or *galleryvm* (Gallery VM Image). The build VM can be connected straight to a VM Scale Set (classic method) or via a Gallery VM Image (modern method).
 
 ### Managed Image Cleanup
 ![Runtime parameters for Managed Images Cleanup](./assets/ManagedImageCleanup-Queue.png)
