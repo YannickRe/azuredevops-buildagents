@@ -63,7 +63,7 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |        
-        $WinImages = ['windows2019','windows2022']
+        $WinImages = @('windows2019','windows2022')
         ForEach ($WinImage in $WinImages) {
             $TemplateFile = "./runner-images/images/win/$WinImage.json"
             Write-Host 'Attempting to modify $TemplateFile with workaround'
