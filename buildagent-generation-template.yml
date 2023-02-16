@@ -63,12 +63,14 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |        
-        $TemplateFile = "./runner-images/images/win/${{ parameters.image_type }}.json"
-        Write-Host 'Attempting to modify $TemplateFile with workaround'
-        ((Get-Content -path $TemplateFile -Raw) -replace '"type": "azure-arm",','"type": "azure-arm","azure_tags": { "ExcludeMdeAutoProvisioning": "True" },') | Set-Content -Path $TemplateFile               
-        Write-Host "$TemplateFile modified"
-        Get-Content -path $TemplateFile -Raw
-
+        $WinImages = @('windows2019','windows2022')
+        ForEach ($WinImage in $WinImages) {
+            $TemplateFile = "./runner-images/images/win/$WinImage.json"
+            Write-Host 'Attempting to modify $TemplateFile with workaround'
+            ((Get-Content -path $TemplateFile -Raw) -replace '"type": "azure-arm",','"type": "azure-arm","azure_tags": { "ExcludeMdeAutoProvisioning": "True" },') | Set-Content -Path $TemplateFile               
+            Write-Host "$TemplateFile modified"
+            Get-Content -path $TemplateFile -Raw
+        }
 
   - task: PowerShell@2
     name: setVars
