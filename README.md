@@ -17,7 +17,7 @@ Currently supports Windows Server 2019, Windows Server 2022, Ubuntu 2004 and Ubu
 The pipeline requires Azure resources for the temporary building of the VM image, Azure resources for running the resulting Agent Pool, and some configuration in Azure DevOps.
 
 ## Azure Compute Gallery
-Create (if you don´t have one) an Azure Computer Gallery in your Azure subscription, and create the following VM Image Defenitions:
+Create (if you don´t have one) an Azure Computer Gallery in your Azure subscription, and create the following VM Image Definitions:
 - ubuntu2004-agentpool-full (OS: Linux)
 - ubuntu2204-agentpool-full (OS: Linux)
 - windows2019-agentpool-full (OS: Windows)

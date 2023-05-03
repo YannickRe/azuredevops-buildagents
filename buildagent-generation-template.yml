@@ -24,127 +24,171 @@ parameters:
   displayName: Scripts Path
   type: string
   default: .
-  
-jobs:
-- job: imagegeneration
-  displayName: Image Generation (${{ parameters.image_type }})
-  ${{ if ne(parameters.depends_on, ' ') }}:
-    dependsOn: ${{ parameters.depends_on }}
-  timeoutInMinutes: '600'
-  cancelTimeoutInMinutes: '30'
+- name: update_type
+  displayName: 'Update vmss (VM Scale Set) or galleryvm (Gallery VM Image) ?'
+  type: string
+  default: galleryvm
+  values:
+  - galleryvm
+  - vmss
+
+stages:
+- stage: buildagent_template_vm
+  displayName: 'Build Agent Template VM'
+  jobs: 
+  - job: imagegeneration
+    displayName: Image Generation (${{ parameters.image_type }})
+    ${{ if ne(parameters.depends_on, ' ') }}:
+      dependsOn: ${{ parameters.depends_on }}
+    timeoutInMinutes: '600'
+    cancelTimeoutInMinutes: '30'
+    variables:
+      - group: ${{ parameters.variable_group }}
+    pool: 
+      name: ${{ parameters.agent_pool }}
+
+    steps:
+    - checkout: self
+    - ${{ if ne(parameters.repository_base_path, '.') }}:
+      - checkout: ${{ parameters.repository_base_path }}
+    - task: PowerShell@2
+      displayName: Remove Old runner-images Folder
+      inputs:
+        targetType: inline
+        script: if (Test-Path ".\runner-images\") { Remove-Item -Recurse -Force ".\runner-images\" }
+    - script: | 
+        git clone https://github.com/actions/runner-images.git
+      displayName: 'Clone the GitHub repository'
+
+    - task: PowerShell@2
+      name: setVars
+      displayName: 'Set image template variables'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $ResourcesNamePrefix = "$(Build.BuildId)"
+          $ImageType = "${{ parameters.image_type }}"
+          $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "linux" } else { "win" }
+          $OsType = if ($ImageType.StartsWith("ubuntu")) { "Linux" } else { "Windows" }
+          $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
+          $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.pkr.hcl"
+          if ( -not (Test-Path $TemplatePath) ) {
+              $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.json"
+          }
+          $ImageReadmeNameConcat = "${{ parameters.image_type }}-Readme.md"
+          $ImageReadmeName = $ImageReadmeNameConcat.Substring(0,1).ToUpper()+$ImageReadmeNameConcat.Substring(1)
+          Write-Host "##vso[task.setvariable variable=TemplateDirectoryPath;]$TemplateDirectoryPath"
+          Write-Host "##vso[task.setvariable variable=TemplatePath;]$TemplatePath"
+          Write-Host "##vso[task.setvariable variable=OsType;isOutput=true;]$OsType"
+          Write-Host "##vso[task.setvariable variable=ImageType;isOutput=true;]$ImageType"
+          Write-Host "##vso[task.setvariable variable=ResourcesNamePrefix;isOutput=true;]$ResourcesNamePrefix"
+          Write-Host "##vso[task.setvariable variable=ImageReadmeName;isOutput=true;]$ImageReadmeName"
+
+    - task: PowerShell@2
+      displayName: 'Workaround for issue: https://github.com/actions/runner-images/discussions/6251'
+      inputs:
+        targetType: 'inline'
+        script: |
+          If ('$(setVars.OsType)' -eq 'Windows') {
+            Write-Host 'Attempting to modify $(TemplatePath) with workaround'
+            ((Get-Content -path "$(TemplatePath)" -Raw) -replace '"type": "azure-arm",','"type": "azure-arm","azure_tags": { "ExcludeMdeAutoProvisioning": "True" },') | Set-Content -Path "$(TemplatePath)"              
+            Write-Host "$(TemplatePath) modified"
+          }
+
+    - task: PowerShell@2
+      name: buildVm
+      displayName: 'Build VM'
+      inputs:
+        targetType: filePath
+        filePath: ${{ parameters.repository_base_path }}/scripts/build-image.ps1
+        arguments: -ResourcesNamePrefix $(setVars.ResourcesNamePrefix) `
+                  -ClientId $(CLIENT_ID) `
+                  -ClientSecret $(CLIENT_SECRET) `
+                  -TemplatePath $(TemplatePath) `
+                  -ResourceGroup $(AZURE_RESOURCE_GROUP) `
+                  -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
+                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
+                  -TenantId $(AZURE_TENANT) `
+                  -VirtualNetworkName $(BUILD_AGENT_VNET_NAME) `
+                  -VirtualNetworkRG $(BUILD_AGENT_VNET_RESOURCE_GROUP) `
+                  -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME)
+                  -Location $(AZURE_LOCATION)
+      env:
+        PACKER_LOG: 1
+        PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
+
+    - task: PowerShell@2
+      displayName: 'Output Readme file content'
+      inputs:
+        targetType: 'inline'
+        script: |
+          Get-Content -Path (Join-Path "$(TemplateDirectoryPath)" "$(setVars.ImageReadmeName)")
+
+    - task: PowerShell@2
+      displayName: 'Print provisioners duration'
+      inputs:
+        targetType: 'filePath'
+        filePath: ${{ parameters.repository_base_path }}/scripts/measure-provisioners-duration.ps1
+        arguments: -PackerLogPath "$(Build.ArtifactStagingDirectory)/packer-log.txt" `
+                  -PrefixToPathTrim "$(TemplateDirectoryPath)" `
+                  -PrintTopNLongest 25
+
+    - task: PowerShell@2
+      displayName: 'Clean up resources'
+      condition: always()
+      inputs:
+        targetType: filePath
+        filePath: ${{ parameters.repository_base_path }}/scripts/cleanup.ps1
+        arguments: -ResourcesNamePrefix $(setVars.ResourcesNamePrefix) `
+                  -ClientId $(CLIENT_ID) `
+                  -ClientSecret $(CLIENT_SECRET) `
+                  -Image $(setVars.ImageType) `
+                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
+                  -TenantId $(AZURE_TENANT) `
+                  -StorageAccount $(AZURE_STORAGE_ACCOUNT)
+
+- stage: convert_template_to_managedvm
+  displayName: 'Convert Template to Managed VM'
+  dependsOn: buildagent_template_vm
+  jobs:
+  - template: buildagent-generation-managedvm.yml
+    parameters: 
+      variable_group: ${{ parameters.variable_group }}
+      agent_pool: ${{ parameters.agent_pool }}
+      repository_base_path: ${{ parameters.repository_base_path }}
+
+- stage: create_gallery_imagevm
+  displayName:  'Create Gallery Image Version VM'
+  condition: and(succeeded(), eq('${{ parameters.update_type }}', 'galleryvm'))
+  dependsOn: convert_template_to_managedvm
+  jobs:
+  - template: buildagent-generation-galleryvm.yml
+    parameters: 
+      variable_group: ${{ parameters.variable_group }}
+      agent_pool: ${{ parameters.agent_pool }}
+      repository_base_path: ${{ parameters.repository_base_path }}
+
+- stage: update_vmss_imagevm
+  displayName:  'Update VM Scale Set to new Image'
+  dependsOn: convert_template_to_managedvm
+  condition: and(succeeded(), eq('${{ parameters.update_type }}', 'vmss'))
   variables:
-    - group: ${{ parameters.variable_group }}
-  pool: 
-    name: ${{ parameters.agent_pool }}
-
-  steps:
-  - checkout: self
-  - ${{ if ne(parameters.repository_base_path, '.') }}:
-    - checkout: ${{ parameters.repository_base_path }}
-  - task: PowerShell@2
-    displayName: Remove Old runner-images Folder
-    inputs:
-      targetType: inline
-      script: if (Test-Path ".\runner-images\") { Remove-Item -Recurse -Force ".\runner-images\" }
-  - script: | 
-      git clone https://github.com/actions/runner-images.git
-    displayName: 'Clone the GitHub repository'
-
-  - task: PowerShell@2
-    displayName: 'Workaround for issue: Certificate issue in install-rust.ps1 script'
-    inputs:
-      targetType: 'inline'
-      script: |        
-        sed -i 's,"https://win.rustup.rs/x86_64","https://static.rust-lang.org/rustup/dist/x86_64-pc-windows-msvc/rustup-init.exe",g' ./runner-images/images/win/scripts/Installers/Install-Rust.ps1
-        echo "##[section]Corrected source url in Install-Rust.ps1"
-
-  - task: PowerShell@2
-    displayName: 'Workaround for issue: https://github.com/actions/runner-images/discussions/6251'
-    inputs:
-      targetType: 'inline'
-      script: |        
-        $WinImages = @('windows2019','windows2022')
-        ForEach ($WinImage in $WinImages) {
-            $TemplateFile = "./runner-images/images/win/$WinImage.json"
-            Write-Host 'Attempting to modify $TemplateFile with workaround'
-            ((Get-Content -path $TemplateFile -Raw) -replace '"type": "azure-arm",','"type": "azure-arm","azure_tags": { "ExcludeMdeAutoProvisioning": "True" },') | Set-Content -Path $TemplateFile               
-            Write-Host "$TemplateFile modified"
-            Get-Content -path $TemplateFile -Raw
-        }
-
-  - task: PowerShell@2
-    name: setVars
-    displayName: 'Set image template variables'
-    inputs:
-      targetType: 'inline'
-      script: |
-        $ResourcesNamePrefix = "$(Build.BuildId)"
-        $ImageType = "${{ parameters.image_type }}"
-        $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "linux" } else { "win" }
-        $OsType = if ($ImageType.StartsWith("ubuntu")) { "Linux" } else { "Windows" }
-        $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
-        $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.pkr.hcl"
-        if ( -not (Test-Path $TemplatePath) ) {
-            $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.json"
-        }
-        $ImageReadmeNameConcat = "${{ parameters.image_type }}-Readme.md"
-        $ImageReadmeName = $ImageReadmeNameConcat.Substring(0,1).ToUpper()+$ImageReadmeNameConcat.Substring(1)
-        Write-Host "##vso[task.setvariable variable=TemplateDirectoryPath;]$TemplateDirectoryPath"
-        Write-Host "##vso[task.setvariable variable=TemplatePath;]$TemplatePath"
-        Write-Host "##vso[task.setvariable variable=OsType;isOutput=true;]$OsType"
-        Write-Host "##vso[task.setvariable variable=ImageType;isOutput=true;]$ImageType"
-        Write-Host "##vso[task.setvariable variable=ResourcesNamePrefix;isOutput=true;]$ResourcesNamePrefix"
-        Write-Host "##vso[task.setvariable variable=ImageReadmeName;isOutput=true;]$ImageReadmeName"
-   
-  - task: PowerShell@2
-    name: buildVm
-    displayName: 'Build VM'
-    inputs:
-      targetType: filePath
-      filePath: ${{ parameters.repository_base_path }}/scripts/build-image.ps1
-      arguments: -ResourcesNamePrefix $(setVars.ResourcesNamePrefix) `
-                 -ClientId $(CLIENT_ID) `
-                 -ClientSecret $(CLIENT_SECRET) `
-                 -TemplatePath $(TemplatePath) `
-                 -ResourceGroup $(AZURE_RESOURCE_GROUP) `
-                 -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
-                 -SubscriptionId $(AZURE_SUBSCRIPTION) `
-                 -TenantId $(AZURE_TENANT) `
-                 -VirtualNetworkName $(BUILD_AGENT_VNET_NAME) `
-                 -VirtualNetworkRG $(BUILD_AGENT_VNET_RESOURCE_GROUP) `
-                 -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME)
-                 -Location $(AZURE_LOCATION)
-    env:
-      PACKER_LOG: 1
-      PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
-
-  - task: PowerShell@2
-    displayName: 'Output Readme file content'
-    inputs:
-      targetType: 'inline'
-      script: |
-        Get-Content -Path (Join-Path "$(TemplateDirectoryPath)" "$(setVars.ImageReadmeName)")
-
-  - task: PowerShell@2
-    displayName: 'Print provisioners duration'
-    inputs:
-      targetType: 'filePath'
-      filePath: ${{ parameters.repository_base_path }}/scripts/measure-provisioners-duration.ps1
-      arguments: -PackerLogPath "$(Build.ArtifactStagingDirectory)/packer-log.txt" `
-                 -PrefixToPathTrim "$(TemplateDirectoryPath)" `
-                 -PrintTopNLongest 25
-
-  - task: PowerShell@2
-    displayName: 'Clean up resources'
-    condition: always()
-    inputs:
-      targetType: filePath
-      filePath: ${{ parameters.repository_base_path }}/scripts/cleanup.ps1
-      arguments: -ResourcesNamePrefix $(setVars.ResourcesNamePrefix) `
-                 -ClientId $(CLIENT_ID) `
-                 -ClientSecret $(CLIENT_SECRET) `
-                 -Image $(setVars.ImageType) `
-                 -SubscriptionId $(AZURE_SUBSCRIPTION) `
-                 -TenantId $(AZURE_TENANT) `
-                 -StorageAccount $(AZURE_STORAGE_ACCOUNT)
-
+  - ${{ if eq(parameters.image_type, 'windows2019') }}:
+    - name: VmssNames
+      value: $[variables.VMSS_Windows2019]
+  - ${{ if eq(parameters.image_type, 'windows2022') }}:
+    - name: VmssNames
+      value: $[variables.VMSS_Windows2022]
+  - ${{ if eq(parameters.image_type, 'ubuntu2004') }}:
+    - name: VmssNames
+      value: $[variables.VMSS_Ubuntu2004]
+  - ${{ if eq(parameters.image_type, 'ubuntu2204') }}:
+    - name: VmssNames
+      value: $[variables.VMSS_Ubuntu2204]
+  jobs:
+  - template: buildagent-generation-update-vmss.yml
+    parameters: 
+      variable_group: ${{ parameters.variable_group }}
+      agent_pool: ${{ parameters.agent_pool }}
+      repository_base_path: ${{ parameters.repository_base_path }}
+      vmss_names: $(VmssNames)
