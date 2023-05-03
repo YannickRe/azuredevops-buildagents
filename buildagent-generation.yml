@@ -2,7 +2,7 @@ parameters:
 - name: image_type
   displayName: Build Agent Image
   type: string
-  default: windows2019
+  default: ubuntu2204
   values:
   - windows2019
   - windows2022
@@ -15,16 +15,60 @@ parameters:
 - name: agent_pool
   displayName: Agent Pool
   type: string
-  default: CI Windows2019
+  default: 'Host Pool - Image'
+- name: update_type
+  displayName: 'Update vmss (VM Scale Set) or galleryvm (Gallery VM Image) ?'
+  type: string
+  default: galleryvm
+  values:
+  - galleryvm
+  - vmss
 
 trigger: none
 
 variables:
   - group: ${{ parameters.variable_group }}
+  - name: update_type
+    value: ${{ parameters.update_type }}
 
-jobs:
-- template: buildagent-generation-template.yml
-  parameters: 
-    image_type: ${{ parameters.image_type }}
-    variable_group: ${{ parameters.variable_group }}
-    agent_pool: ${{ parameters.agent_pool }}
+stages:
+  - stage: buildagent_template_vm
+    displayName: 'Build Agent Template VM'
+    jobs: 
+    - template: buildagent-generation-template.yml
+      parameters: 
+        image_type: ${{ parameters.image_type }}
+        variable_group: ${{ parameters.variable_group }}
+        agent_pool: ${{ parameters.agent_pool }}
+
+  - stage: convert_template_to_managedvm
+    displayName: 'Convert Template to Managed VM'
+    dependsOn: buildagent_template_vm
+    jobs:
+    - template: buildagent-generation-managedvm.yml
+      parameters: 
+        image_type: ${{ parameters.image_type }}
+        variable_group: ${{ parameters.variable_group }}
+        agent_pool: ${{ parameters.agent_pool }}
+
+  - stage: create_gallery_imagevm
+    displayName:  'Create Gallery Image Version VM'
+    condition: and(succeeded(), eq(variables.update_type, 'galleryvm'))
+    dependsOn: convert_template_to_managedvm
+    jobs:
+    - template: buildagent-generation-galleryvm.yml
+      parameters: 
+        image_type: ${{ parameters.image_type }}
+        variable_group: ${{ parameters.variable_group }}
+        agent_pool: ${{ parameters.agent_pool }}
+
+  - stage: update_vmss_imagevm
+    displayName:  'Update VM Scale Set to new Image'
+    dependsOn: convert_template_to_managedvm
+    condition: and(succeeded(), eq(variables.update_type, 'vmss'))
+    jobs:
+    - template: buildagent-generation-update-vmss.yml
+      parameters: 
+        image_type: ${{ parameters.image_type }}
+        variable_group: ${{ parameters.variable_group }}
+        agent_pool: ${{ parameters.agent_pool }}

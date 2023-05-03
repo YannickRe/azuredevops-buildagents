@@ -1,0 +1,66 @@
+parameters:
+- name: image_type
+  displayName: Build Agent Image
+  type: string
+  default: windows2019
+  values:
+  - windows2019
+  - windows2022
+  - ubuntu2004
+  - ubuntu2204
+- name: variable_group
+  displayName: Variable Group
+  type: string
+  default: BuildAgents
+- name: agent_pool
+  displayName: Agent Pool
+  type: string
+  default: CI Windows2019
+- name: depends_on
+  displayName: First Job Depends On
+  type: object
+  default: ' '
+- name: repository_base_path
+  displayName: Scripts Path
+  type: string
+  default: .
+  
+jobs:
+- job: managedimagegeneration
+  displayName: Managed Image Generation (${{ parameters.image_type }})
+  timeoutInMinutes: 600
+  cancelTimeoutInMinutes: 30
+  pool: 
+    name: ${{ parameters.agent_pool }}
+  variables:
+  - name: OsType
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.OsType'] ]
+  - name: ImageType
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ImageType'] ]
+  - name: ResourcesNamePrefix
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ResourcesNamePrefix'] ]
+  - name: OSDiskUri
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['buildVm.OSDiskUri'] ]
+  - group: ${{ parameters.variable_group }}
+
+  steps:
+  - checkout: self
+  - ${{ if ne(parameters.repository_base_path, '.') }}:
+    - checkout: ${{ parameters.repository_base_path }}
+  - task: PowerShell@2
+    displayName: 'Create Azure Managed Image'
+    name: createmanagedimage
+    inputs:
+      targetType: filePath
+      filePath: ${{ parameters.repository_base_path }}/scripts/create-managedimage.ps1
+      arguments: -ResourcesNamePrefix $(ResourcesNamePrefix) `
+                 -ClientId $(CLIENT_ID) `
+                 -ClientSecret $(CLIENT_SECRET) `
+                 -ResourceGroup $(AZURE_RESOURCE_GROUP) `
+                 -StorageAccount $(AZURE_STORAGE_ACCOUNT) `
+                 -SubscriptionId $(AZURE_SUBSCRIPTION) `
+                 -TenantId $(AZURE_TENANT) `
+                 -Location $(AZURE_LOCATION) `
+                 -ImageType $(ImageType) `
+                 -OsVhdUri $(OSDiskUri) `
+                 -OsType $(OsType)
