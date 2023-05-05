@@ -1,13 +1,4 @@
 parameters:
-- name: image_type
-  displayName: Build Agent Image
-  type: string
-  default: windows2019
-  values:
-  - windows2019
-  - windows2022
-  - ubuntu2004
-  - ubuntu2204
 - name: variable_group
   displayName: Variable Group
   type: string
@@ -16,10 +7,6 @@ parameters:
   displayName: Agent Pool
   type: string
   default: CI Windows2019
-- name: depends_on
-  displayName: First Job Depends On
-  type: object
-  default: ' '
 - name: repository_base_path
   displayName: Scripts Path
   type: string
@@ -27,16 +14,16 @@ parameters:
 
 jobs:
 - job: createvmimageversion
-  displayName: Create New Gallery VMImage Version (${{ parameters.image_type }})
+  displayName: Create New Gallery VMImage Version
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 90
   pool: 
     name: ${{ parameters.agent_pool }}
   variables:
-  - name: ImageType
-    value: ${{ parameters.image_type }}
   - name: ManagedImageId
     value: $[stageDependencies.convert_template_to_managedvm.managedimagegeneration.outputs['createmanagedimage.ManagedImageId'] ]
+  - name: ImageType
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ImageType'] ]
   - group: ${{ parameters.variable_group }}
 
   steps:

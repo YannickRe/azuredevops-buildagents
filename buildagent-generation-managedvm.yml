@@ -1,13 +1,4 @@
 parameters:
-- name: image_type
-  displayName: Build Agent Image
-  type: string
-  default: windows2019
-  values:
-  - windows2019
-  - windows2022
-  - ubuntu2004
-  - ubuntu2204
 - name: variable_group
   displayName: Variable Group
   type: string
@@ -16,10 +7,6 @@ parameters:
   displayName: Agent Pool
   type: string
   default: CI Windows2019
-- name: depends_on
-  displayName: First Job Depends On
-  type: object
-  default: ' '
 - name: repository_base_path
   displayName: Scripts Path
   type: string
@@ -27,7 +14,7 @@ parameters:
   
 jobs:
 - job: managedimagegeneration
-  displayName: Managed Image Generation (${{ parameters.image_type }})
+  displayName: Managed Image Generation
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 30
   pool: 

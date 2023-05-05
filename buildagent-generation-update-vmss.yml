@@ -1,13 +1,4 @@
 parameters:
-- name: image_type
-  displayName: Build Agent Image
-  type: string
-  default: windows2019
-  values:
-  - windows2019
-  - windows2022
-  - ubuntu2004
-  - ubuntu2204
 - name: variable_group
   displayName: Variable Group
   type: string
@@ -16,19 +7,17 @@ parameters:
   displayName: Agent Pool
   type: string
   default: CI Windows2019
-- name: depends_on
-  displayName: First Job Depends On
-  type: object
-  default: ' '
 - name: repository_base_path
   displayName: Scripts Path
   type: string
   default: .
-
+- name: vmss_names
+  displayName: VmssNames
+  type: string
 
 jobs:
 - job: updatevmss
-  displayName: Update Virtual Machine Scale Set (${{ parameters.image_type }})
+  displayName: Update Virtual Machine Scale Set
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 30
   pool: 
@@ -36,19 +25,9 @@ jobs:
   variables:
   - name: ManagedImageId
     value: $[stageDependencies.convert_template_to_managedvm.managedimagegeneration.outputs['createmanagedimage.ManagedImageId'] ]
+  - name: VmssNames
+    value: ${{ parameters.vmss_names }}
   - group: ${{ parameters.variable_group }}
-  - ${{ if eq(parameters.image_type, 'windows2019') }}:
-    - name: VmssNames
-      value: $[variables.VMSS_Windows2019]
-  - ${{ if eq(parameters.image_type, 'windows2022') }}:
-    - name: VmssNames
-      value: $[variables.VMSS_Windows2022]
-  - ${{ if eq(parameters.image_type, 'ubuntu2004') }}:
-    - name: VmssNames
-      value: $[variables.VMSS_Ubuntu2004]
-  - ${{ if eq(parameters.image_type, 'ubuntu2204') }}:
-    - name: VmssNames
-      value: $[variables.VMSS_Ubuntu2204]
 
   steps:
   - checkout: self
