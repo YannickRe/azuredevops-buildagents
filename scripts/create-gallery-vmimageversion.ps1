@@ -3,6 +3,7 @@ param(
     [String] [Parameter (Mandatory=$true)] $ClientSecret,
     [String] [Parameter (Mandatory=$true)] $SubscriptionId,
     [String] [Parameter (Mandatory=$true)] $TenantId,
+    [String] [Parameter (Mandatory=$true)] $ResourcesNamePrefix,
     [String] [Parameter (Mandatory=$true)] $Location,
     [String] [Parameter (Mandatory=$true)] $ResourceGroup,
     [String] [Parameter (Mandatory=$true)] $GalleryName,
@@ -15,7 +16,7 @@ az login --service-principal --username $ClientId --password $ClientSecret --ten
 az account set -s $SubscriptionId
 
 $date = Get-Date
-$GalleryImageVersion = $date.ToString("yyyy.MM.dd")
+$GalleryImageVersion = "$($date.ToString("yyyyMMdd")).$ResourcesNamePrefix.0"
 $GalleryVmImageDefinition = "$ImageType-agentpool-full"
 
 $VmImageVersion = az sig image-version create -g $GalleryResourceGroup  --gallery-name $GalleryName --gallery-image-definition $GalleryVmImageDefinition --gallery-image-version $GalleryImageVersion --managed-image $ManagedImageId --target-regions $Location

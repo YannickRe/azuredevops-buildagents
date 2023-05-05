@@ -160,7 +160,9 @@ stages:
 - stage: create_gallery_imagevm
   displayName:  'Create Gallery Image Version VM'
   condition: and(succeeded(), eq('${{ parameters.update_type }}', 'galleryvm'))
-  dependsOn: convert_template_to_managedvm
+  dependsOn: 
+    - buildagent_template_vm
+    - convert_template_to_managedvm
   jobs:
   - template: buildagent-generation-galleryvm.yml
     parameters: 
@@ -170,7 +172,9 @@ stages:
 
 - stage: update_vmss_imagevm
   displayName:  'Update VM Scale Set to new Image'
-  dependsOn: convert_template_to_managedvm
+  dependsOn: 
+    - buildagent_template_vm
+    - convert_template_to_managedvm
   condition: and(succeeded(), eq('${{ parameters.update_type }}', 'vmss'))
   variables:
   - ${{ if eq(parameters.image_type, 'windows2019') }}:
