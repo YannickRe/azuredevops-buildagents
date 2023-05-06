@@ -24,6 +24,8 @@ jobs:
     value: $[stageDependencies.convert_template_to_managedvm.managedimagegeneration.outputs['createmanagedimage.ManagedImageId'] ]
   - name: ImageType
     value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ImageType'] ]
+  - name: ResourcesNamePrefix
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ResourcesNamePrefix'] ]
   - group: ${{ parameters.variable_group }}
 
   steps:
@@ -32,10 +34,12 @@ jobs:
     - checkout: ${{ parameters.repository_base_path }}
   - task: PowerShell@2
     displayName: 'Create new Gallery Virtual Machine Image version'
+    name: creategalleryimageversion
     inputs:
       targetType: filePath
       filePath: ${{ parameters.repository_base_path }}/scripts/create-gallery-vmimageversion.ps1
-      arguments: -ClientId $(CLIENT_ID) `
+      arguments: -ResourcesNamePrefix $(ResourcesNamePrefix) `
+                 -ClientId $(CLIENT_ID) `
                  -ClientSecret $(CLIENT_SECRET) `
                  -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
