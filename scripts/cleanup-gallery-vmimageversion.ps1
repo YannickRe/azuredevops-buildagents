@@ -25,6 +25,7 @@ import-module Az.Compute
 $securePassword = ConvertTo-SecureString -String $ClientSecret -AsPlainText -Force
 $credentials = New-Object -TypeName PSCredential -ArgumentList $ClientId, $securePassword
 Connect-AzAccount -ServicePrincipal -Tenant $TenantId -Credential $credentials -Subscription $SubscriptionId
+Set-AzureSubscription -SubscriptionId $SubscriptionId
 
 # Set the image threshold
 # Threshhold value 3 will remove the oldest vm images if there 3 or more images available in the gallery. This value can be changed to your needs.
