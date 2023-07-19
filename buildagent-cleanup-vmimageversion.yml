@@ -1,0 +1,47 @@
+schedules:
+- cron: "0 0 1 * *" #At 12:00 AM UTC, on the first day of the month (between 24th and 31rd). Generated via https://ncrontab.swimburger.net/
+  displayName: "At 12:00 AM UTC, on the first day of the month"
+  branches:
+    include:
+     - main
+  always: true
+  
+trigger: none
+
+parameters:
+- name: variable_group
+  displayName: Variable Group
+  type: string
+  default: BuildAgents
+- name: agent_pool
+  displayName: Agent Pool
+  type: string
+- name: repository_base_path
+  displayName: Scripts Path
+  type: string
+  default: .
+
+jobs:
+- job: cleanupobsoletevmrunnerimages
+  displayName: 'Cleanup obsolete VM Gallery runner images'
+  pool: 
+    name: ${{ parameters.agent_pool }}
+  variables:
+  - group: ${{ parameters.variable_group }}
+
+  steps:
+  - checkout: self
+  - ${{ if ne(parameters.repository_base_path, '.') }}:
+    - checkout: ${{ parameters.repository_base_path }}
+  - task: PowerShell@2
+    displayName: 'Remove obsolete VM Gallery runner Images'
+    inputs:
+      targetType: filePath
+      filePath: ${{ parameters.repository_base_path }}/scripts/cleanup-gallery-vmimageversion.ps1
+      arguments: -ClientId $(CLIENT_ID) `
+                 -ClientSecret $(CLIENT_SECRET) `
+                 -SubscriptionId $(AZURE_SUBSCRIPTION) `
+                 -TenantId $(AZURE_TENANT) `
+                 -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
+                 -GalleryName $(GALLERY_NAME) `
+                 -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP)
