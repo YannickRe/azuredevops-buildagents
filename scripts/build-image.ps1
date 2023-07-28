@@ -10,7 +10,8 @@ param(
     [String] [Parameter (Mandatory=$true)] $TenantId,
     [String] [Parameter (Mandatory=$false)] $VirtualNetworkName,
     [String] [Parameter (Mandatory=$false)] $VirtualNetworkRG,
-    [String] [Parameter (Mandatory=$false)] $VirtualNetworkSubnet
+    [String] [Parameter (Mandatory=$false)] $VirtualNetworkSubnet,
+    [String] [Parameter (Mandatory=$false)] $license_type="Windows_Server"
 )
 
 if (-not (Test-Path $TemplatePath))
@@ -53,6 +54,7 @@ packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
                 -var "virtual_network_resource_group_name=$VirtualNetworkRG" `
                 -var "virtual_network_subnet_name=$VirtualNetworkSubnet" `
                 -var "run_validation_diskspace=$env:RUN_VALIDATION_FLAG" `
+                -var "license_type=$license_type" `
                 -color=false `
                 $TemplatePath `
         | Foreach-Object { 
