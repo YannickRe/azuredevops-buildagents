@@ -70,7 +70,7 @@ stages:
         write-output $latest_release
         git clone https://github.com/actions/runner-images.git
         cd runner-images
-        git checkout ($latest_release.target_commitish)
+        git checkout ($latest_release.tag_name)
       displayName: 'Checkout Latest GitHub Release for ${{ parameters.image_type }}'
     - task: PowerShell@2
       name: setVars
