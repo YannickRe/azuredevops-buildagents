@@ -32,7 +32,8 @@ function Get-LatestGithubRelease {
     [string]$RepoName = 'runner-images',
     [Parameter(Mandatory = $true)]
     [ValidateSet('win19', 'win22', 'ubuntu22', 'ubuntu20')]
-    [string]$OSTagPrefix
+    [string]$OSTagPrefix,
+    [bool]$DisallowPreRelease = $true
   )
 
   $releases = Get-GitHubReleases -GitHubOwner $githubOwner -RepoName $repoName
@@ -44,6 +45,9 @@ function Get-LatestGithubRelease {
         $filteredreleases += $_
       }
     }
+    if ($DisallowPreRelease) {
+      $filteredreleases = $filteredreleases | Where-Object { $_.prerelease -eq $false }
+    }
 
     $latest_release = $filteredreleases | Sort-Object -Property published_at -Descending | Select-Object -First 1
   }
@@ -54,9 +58,11 @@ function Get-LatestGithubRelease {
   if ($latest_release) {
     $output_object = @{
       'tag_name'         = $latest_release.tag_name
+      'name'             = $latest_release.name
       'published_at'     = $latest_release.published_at
       'url'              = $latest_release.url
       'target_commitish' = $latest_release.target_commitish
+      'prerelease'       = $latest_release.prerelease
     }
     Write-Output $output_object
   }
