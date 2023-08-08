@@ -9,7 +9,8 @@ Currently supports Windows Server 2019, Windows Server 2022, Ubuntu 2004 and Ubu
   - Build the VM with Packer  
   - Clean up remaining temporary Azure resources  
   - Turn VM disk into Azure Managed Image  
-  - Add Azure Managed Image to Azure Compute Gallery and remove Azure Managed Image
+  - Add Azure Managed Image to Azure Compute Gallery or Update Virtual Machine Scale Set with the new image
+  - Remove Azure Managed Image
 - __[managedimage-cleanup.yml](./managedimage-cleanup.yml)__  
   - Remove unused Azure Managed Images
 
@@ -98,6 +99,7 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 ![Runtime parameters for Build Agent Generation](./assets/BuildAgentGeneration-Queue.png)  
 
 - __Build Agent Image__: which image to build, choice between `Windows Server 2019`, `Windows Server 2022`, `Ubuntu 20.04` and `Ubuntu 22.04`  
+- __runner-images Version__: which source code of the runner-images to build, choice between `alpha` (latest main branch), `prerelease` (latest prerelease version), and `release` (latest stable release)  
 - __Variable Group__: name of the Variable Group containing the variables necessary for execution
 - __Agent Pool__: the Agent Pool to use for running the pipeline
 - __Update Method__: select type of deployment. *vmss* (VM Scale Set) or *galleryvm* (Gallery VM Image). The build VM can be connected straight to a VM Scale Set (classic method) or via a Gallery VM Image (modern method).
@@ -140,9 +142,10 @@ stages:
     - template: buildagent-generation-template.yml@azuredevops-buildagents
       parameters: 
         image_type: <image-type>
+        runner_images_version: <runner_images_version>
         variable_group: <variable-group>
         agent_pool: <agent-pool>
-        repository_base_path: azuredevops-buildagents
+        repository_base_path: <repository_base_path>
 ```
 
 ### Template parameters

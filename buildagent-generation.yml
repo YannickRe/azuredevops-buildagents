@@ -2,12 +2,20 @@ parameters:
 - name: image_type
   displayName: Build Agent Image
   type: string
-  default: ubuntu2204
+  default: windows2019
   values:
   - windows2019
   - windows2022
   - ubuntu2004
   - ubuntu2204
+- name: runner_images_version
+  displayName: runner-images Version
+  type: string
+  default: release
+  values:
+  - alpha
+  - prerelease
+  - release
 - name: variable_group
   displayName: Variable Group
   type: string
@@ -30,6 +38,7 @@ stages:
 - template: buildagent-generation-template.yml
   parameters: 
     image_type: ${{ parameters.image_type }}
+    runner_images_version: ${{ parameters.runner_images_version }}
     variable_group: ${{ parameters.variable_group }}
     agent_pool: ${{ parameters.agent_pool }}
     update_type: ${{ parameters.update_type }}
