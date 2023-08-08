@@ -6,7 +6,8 @@ param(
     [String] [Parameter (Mandatory=$true)] $TenantId,
     [String] [Parameter (Mandatory=$true)] $ResourceGroup,
     [String] [Parameter (Mandatory=$true)] $GalleryName,
-    [String] [Parameter (Mandatory=$true)] $GalleryResourceGroup
+    [String] [Parameter (Mandatory=$true)] $GalleryResourceGroup,
+    [int] [Parameter (Mandatory=$true)] $ImageCountThreshold
 )
 
 # Variables
@@ -25,10 +26,6 @@ import-module Az.Compute
 $securePassword = ConvertTo-SecureString -String $ClientSecret -AsPlainText -Force
 $credentials = New-Object -TypeName PSCredential -ArgumentList $ClientId, $securePassword
 Connect-AzAccount -ServicePrincipal -Tenant $TenantId -Credential $credentials -Subscription $SubscriptionId
-
-# Set the image threshold
-# Threshhold value 3 will remove the oldest vm images if there 3 or more images available in the gallery. This value can be changed to your needs.
-$imageCountThreshold = 3
 
 # Get the gallery
 try {
@@ -59,7 +56,7 @@ if ($gallery) {
             # Get all images of the image definition
             $images = Get-AzGalleryImageVersion -ResourceGroupName $GalleryResourceGroup -GalleryImageDefinitionName $imageDef.Name  -GalleryName $gallery.Name
                
-            if ($images.Count -ge $imageCountThreshold) {
+            if ($images.Count -ge $ImageCountThreshold) {
                 # Sort the images by creation timestamp in ascending order
                 $sortedImages = $images | Sort-Object -Property CreatedTime
 
@@ -69,7 +66,7 @@ if ($gallery) {
                 Write-Host "##[section]Removing the oldest image version for image definition '$imageDefinition': $($imageToRemove.Name)"
                 Remove-AzGalleryImageVersion -ResourceGroupName $GalleryResourceGroup -GalleryName $gallery.Name -GalleryImageDefinitionName $imageDefinition -Name $imageToRemove.Name -Force -AsJob 
             } else {
-                Write-Host "##[section]The number of images for image definition '$imageDefinition' is less than $imageCountThreshold"
+                Write-Host "##[section]The number of images for image definition '$imageDefinition' is less than $ImageCountThreshold"
             }
         }
    }

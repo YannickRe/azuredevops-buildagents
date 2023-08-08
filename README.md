@@ -12,14 +12,13 @@ Currently supports Windows Server 2019, Windows Server 2022, Ubuntu 2004 and Ubu
   - Add Azure Managed Image to Azure Compute Gallery or Update Virtual Machine Scale Set with the new image
   - Remove Azure Managed Image
 - __[managedimage-cleanup.yml](./managedimage-cleanup.yml)__  
-  - Remove unused Azure Managed Images
-- __[managedimage-cleanup-gallery.yml](./managedimage-cleanup-gallery.yml)__ 
-  - Cleanup old Azure Runner images in Azure Compute Gallery. This pipeline has an automated scheduler running at the 1st day of Every Month. This can be adjusted to your own needs.
+  - Remove unused Azure Managed Images or old Gallery image versions, depending on selection
+
 ## Preparation
 The pipeline requires Azure resources for the temporary building of the VM image, Azure resources for running the resulting Agent Pool, and some configuration in Azure DevOps.
 
 ## Azure Compute Gallery
-Create (if you don´t have one) an Azure Computer Gallery in your Azure subscription, and create the following VM Image Defenitions:
+Create (if you don´t have one) an Azure Compute Gallery in your Azure subscription, and create the following VM Image Definitions:
 - ubuntu2004-agentpool-full (OS: Linux)
 - ubuntu2204-agentpool-full (OS: Linux)
 - windows2019-agentpool-full (OS: Windows)
@@ -109,6 +108,7 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 ![Runtime parameters for Managed Images Cleanup](./assets/ManagedImageCleanup-Queue.png)
 
 - __Variable Group__: name of the Variable Group containing the variables necessary for execution
+- __Delete vmss (VM Scale Set) or galleryvm (Gallery VM) image?__: should it delete orphaned Managed Images or old versions of the image in an Azure Compute Gallery
 
 ## How to use
 ### Templated version
