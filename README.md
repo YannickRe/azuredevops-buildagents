@@ -13,12 +13,13 @@ Currently supports Windows Server 2019, Windows Server 2022, Ubuntu 2004 and Ubu
   - Remove Azure Managed Image
 - __[managedimage-cleanup.yml](./managedimage-cleanup.yml)__  
   - Remove unused Azure Managed Images
-
+- __[managedimage-cleanup-gallery.yml](./managedimage-cleanup-gallery.yml)__ 
+  - Cleanup old Azure Runner images in Azure Compute Gallery. This pipeline has an automated scheduler running at the 1st day of Every Month. This can be adjusted to your own needs.
 ## Preparation
 The pipeline requires Azure resources for the temporary building of the VM image, Azure resources for running the resulting Agent Pool, and some configuration in Azure DevOps.
 
 ## Azure Compute Gallery
-Create (if you don´t have one) an Azure Compute Gallery in your Azure subscription, and create the following VM Image Definitions:
+Create (if you don´t have one) an Azure Computer Gallery in your Azure subscription, and create the following VM Image Defenitions:
 - ubuntu2004-agentpool-full (OS: Linux)
 - ubuntu2204-agentpool-full (OS: Linux)
 - windows2019-agentpool-full (OS: Windows)
