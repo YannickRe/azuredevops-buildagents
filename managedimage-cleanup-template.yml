@@ -12,7 +12,7 @@ parameters:
   - vmss
 - name: gallery_threshold
   displayName: Number of image versions to keep in gallery
-  type: integer
+  type: number
   default: 3
 - name: repository_base_path
   displayName: Scripts Path

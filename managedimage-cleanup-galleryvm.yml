@@ -5,7 +5,7 @@ parameters:
   default: BuildAgents
 - name: gallery_threshold
   displayName: Number of image versions to keep in gallery
-  type: integer
+  type: number
   default: 3
 - name: agent_pool
   displayName: Agent Pool
