@@ -8,6 +8,14 @@ parameters:
   - windows2022
   - ubuntu2004
   - ubuntu2204
+- name: runner_images_version
+  displayName: Runner-Images Version
+  type: string
+  default: release
+  values:
+  - alpha
+  - prerelease
+  - release
 - name: variable_group
   displayName: Variable Group
   type: string
@@ -52,26 +60,38 @@ stages:
     - ${{ if ne(parameters.repository_base_path, '.') }}:
       - checkout: ${{ parameters.repository_base_path }}
     - task: PowerShell@2
-      displayName: Remove Old runner-images Folder
+      displayName: 'Checkout the GitHub repository'
       inputs:
         targetType: inline
-        script: if (Test-Path ".\runner-images\") { Remove-Item -Recurse -Force ".\runner-images\" }
-    - powershell: |
-        $os_image_type = '${{ parameters.image_type }}'
-        Write-Output "os image type = $os_image_type"
-        switch ($os_image_type) {
-          'windows2019' { $OSTagPrefix = 'win19' }
-          'windows2022' { $OSTagPrefix = 'win22' }
-          'ubuntu2004' { $OSTagPrefix = 'ubuntu20' }
-          'ubuntu2204' { $OSTagPrefix = 'ubuntu22' }
-        }
-        Write-Output "OSTagPrefix = $OSTagPrefix"
-        $latest_release = ${{ parameters.repository_base_path }}/scripts/get-latestgithubrelease.ps1 -OSTagPrefix $OSTagPrefix
-        write-output $latest_release
-        git clone https://github.com/actions/runner-images.git
-        cd runner-images
-        git checkout ($latest_release.tag_name)
-      displayName: 'Checkout Latest GitHub Release for ${{ parameters.image_type }}'
+        script: |
+          $GitHubOwner = 'actions'
+          $RepoName = 'runner-images'
+          
+          if (Test-Path ".\$RepoName\") { Remove-Item -Recurse -Force ".\$RepoName\" }
+          
+          git clone "https://github.com/$GitHubOwner/$RepoName.git"
+
+          $runner_images_version = '${{ parameters.runner_images_version }}'
+          Write-Output "runner images version = $runner_images_version"
+          if ($runner_images_version -ne 'alpha') {
+            $os_image_type = '${{ parameters.image_type }}'
+            Write-Output "os image type = $os_image_type"
+            switch ($os_image_type) {
+              'windows2019' { $OSTagPrefix = 'win19' }
+              'windows2022' { $OSTagPrefix = 'win22' }
+              'ubuntu2004' { $OSTagPrefix = 'ubuntu20' }
+              'ubuntu2204' { $OSTagPrefix = 'ubuntu22' }
+            }
+            Write-Output "OSTagPrefix = $OSTagPrefix"
+
+            $IncludePrerelease = if ($runner_images_version -eq 'prerelease') { $true } else { $false }
+            Write-Output "IncludePrerelease = $IncludePrerelease"
+
+            $latest_release = ${{ parameters.repository_base_path }}/scripts/get-latestgithubrelease.ps1 -OSTagPrefix $OSTagPrefix -GitHubOwner $GitHubOwner -RepoName $RepoName -IncludePrerelease $IncludePrerelease
+            write-output $latest_release
+            cd runner-images
+            git checkout ($latest_release.tag_name)
+          }
     - task: PowerShell@2
       name: setVars
       displayName: 'Set image template variables'

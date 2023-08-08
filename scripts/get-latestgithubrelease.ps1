@@ -1,7 +1,12 @@
 param(
   [Parameter(Mandatory = $true)]
-  [ValidateSet('win19', 'win22', 'ubuntu22', 'ubuntu20')]
-  [string]$OSTagPrefix
+  [string]$GitHubOwner,
+  [Parameter(Mandatory = $true)]
+  [string]$RepoName,
+  [Parameter(Mandatory = $true)]
+  [string]$OSTagPrefix,
+  [Parameter(Mandatory = $true)]
+  [bool]$IncludePreRelease
 )
 
 
@@ -28,12 +33,14 @@ function Get-GitHubReleases {
 
 function Get-LatestGithubRelease {
   param(
-    [string]$GitHubOwner = 'actions',
-    [string]$RepoName = 'runner-images',
     [Parameter(Mandatory = $true)]
-    [ValidateSet('win19', 'win22', 'ubuntu22', 'ubuntu20')]
+    [string]$GitHubOwner,
+    [Parameter(Mandatory = $true)]
+    [string]$RepoName,
+    [Parameter(Mandatory = $true)]
     [string]$OSTagPrefix,
-    [bool]$DisallowPreRelease = $true
+    [Parameter(Mandatory = $true)]
+    [bool]$IncludePreRelease
   )
 
   $releases = Get-GitHubReleases -GitHubOwner $githubOwner -RepoName $repoName
@@ -45,7 +52,7 @@ function Get-LatestGithubRelease {
         $filteredreleases += $_
       }
     }
-    if ($DisallowPreRelease) {
+    if (!$IncludePreRelease) {
       $filteredreleases = $filteredreleases | Where-Object { $_.prerelease -eq $false }
     }
 
@@ -71,4 +78,4 @@ function Get-LatestGithubRelease {
   }
 }
 
-Get-LatestGithubRelease -OSTagPrefix $OSTagPrefix
+Get-LatestGithubRelease -OSTagPrefix $OSTagPrefix -GitHubOwner $GitHubOwner -RepoName $RepoName -IncludePreRelease $IncludePreRelease
