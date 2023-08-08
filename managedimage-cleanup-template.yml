@@ -24,7 +24,7 @@ parameters:
   default: .
 
 stages:
-- stage: create_gallery_imagevm
+- stage: delete_gallery_imagevm
   displayName:  'Delete Gallery Image Version VM'
   condition: eq('${{ parameters.delete_type }}', 'galleryvm')
   jobs:
@@ -35,7 +35,7 @@ stages:
       repository_base_path: ${{ parameters.repository_base_path }}
       gallery_threshold: ${{ parameters.gallery_threshold }}
 
-- stage: create_gallery_imagevm
+- stage: delete_vmss_imagevm
   displayName:  'Delete orphaned Managed Images'
   condition: eq('${{ parameters.delete_type }}', 'vmss')
   jobs:
