@@ -56,10 +56,22 @@ stages:
       inputs:
         targetType: inline
         script: if (Test-Path ".\runner-images\") { Remove-Item -Recurse -Force ".\runner-images\" }
-    - script: | 
+    - powershell: |
+        $os_image_type = '${{ parameters.image_type }}'
+        Write-Output "os image type = $os_image_type"
+        switch ($os_image_type) {
+          'windows2019' { $OSTagPrefix = 'win19' }
+          'windows2022' { $OSTagPrefix = 'win22' }
+          'ubuntu2004' { $OSTagPrefix = 'ubuntu20' }
+          'ubuntu2204' { $OSTagPrefix = 'ubuntu22' }
+        }
+        Write-Output "OSTagPrefix = $OSTagPrefix"
+        $latest_release = ${{ parameters.repository_base_path }}/scripts/get-latestgithubrelease.ps1 -OSTagPrefix $OSTagPrefix
+        write-output $latest_release
         git clone https://github.com/actions/runner-images.git
-      displayName: 'Clone the GitHub repository'
-
+        cd runner-images
+        git checkout ($latest_release.tag_name)
+      displayName: 'Checkout Latest GitHub Release for ${{ parameters.image_type }}'
     - task: PowerShell@2
       name: setVars
       displayName: 'Set image template variables'
