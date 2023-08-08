@@ -27,7 +27,7 @@ pool:
 variables:
 - group: ${{ parameters.variable_group }}
 
-jobs:
+stages:
 - template: managedimage-cleanup-template.yml
   parameters:
     variable_group: ${{ parameters.variable_group }}
