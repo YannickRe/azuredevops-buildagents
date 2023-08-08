@@ -1,0 +1,41 @@
+parameters:
+- name: variable_group
+  displayName: Variable Group
+  type: string
+  default: BuildAgents
+- name: agent_pool
+  displayName: Agent Pool
+  type: string
+  default: 'Host Pool - Image'
+- name: repository_base_path
+  displayName: Scripts Path
+  type: string
+  default: .
+
+jobs:
+- job: CleanOrphanedManagedImages
+  displayName: Cleanup orphaned Managed Images
+  timeoutInMinutes: 600
+  cancelTimeoutInMinutes: 30
+  variables:
+  - group: ${{ parameters.variable_group }}
+
+  steps:
+  - checkout: self
+  - ${{ if ne(parameters.repository_base_path, '.') }}:
+    - checkout: ${{ parameters.repository_base_path }}
+  - task: PowerShell@2
+    displayName: 'Cleanup orphaned Managed Images'
+    inputs:
+      targetType: filePath
+      filePath: ${{ parameters.repository_base_path }}/scripts/cleanup-managedimages.ps1
+      arguments: -ClientId $(CLIENT_ID) `
+                        -ClientSecret $(CLIENT_SECRET) `
+                        -ResourceGroup $(AZURE_RESOURCE_GROUP) `
+                        -SubscriptionId $(AZURE_SUBSCRIPTION) `
+                        -AgentsResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
+                        -VmssNameWindows $(VMSS_Windows2019) `
+                        -VmssNameWindows2022 $(VMSS_Windows2022) `
+                        -VmssNameUbuntu $(VMSS_Ubuntu2004) `
+                        -VmssNameUbuntu2204 $(VMSS_Ubuntu2204) `
+                        -TenantId $(AZURE_TENANT)
