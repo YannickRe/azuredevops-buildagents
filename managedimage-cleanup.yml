@@ -33,3 +33,4 @@ stages:
     variable_group: ${{ parameters.variable_group }}
     delete_type: ${{ parameters.delete_type }}
     gallery_threshold: 3
+    agent_pool: 'Azure Pipelines'
