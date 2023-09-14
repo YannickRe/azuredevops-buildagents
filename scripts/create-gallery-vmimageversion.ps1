@@ -16,6 +16,7 @@ az account set -s $SubscriptionId
 
 $imageName = "$ImageType-$ResourcesNamePrefix"
 $managedImageId=$(az image list --resource-group $ResourceGroup --query "[?name=='$imageName'].id" --output tsv)
+Write-Host "Retrieve generated managedImageId: $managedImageId"
 
 $date = Get-Date
 $GalleryImageVersion = "$($date.ToString("yyyyMMdd")).$ResourcesNamePrefix.0"
