@@ -147,7 +147,7 @@ stages:
                   -Location $(AZURE_LOCATION) `
                   -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
                   -GalleryName $(GALLERY_NAME) ``
-                  -CaptureNamePrefix $(setVars.ResourcesNamePrefix
+                  -CaptureNamePrefix $(setVars.ResourcesNamePrefix)
       env:
         PACKER_LOG: 1
         PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
