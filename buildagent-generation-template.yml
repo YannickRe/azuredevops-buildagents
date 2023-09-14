@@ -145,7 +145,6 @@ stages:
                   -VirtualNetworkRG $(BUILD_AGENT_VNET_RESOURCE_GROUP) `
                   -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME) `
                   -Location $(AZURE_LOCATION) `
-                  -CaptureNamePrefix  ${{ parameters.image_type }} `
                   -GalleryResourceGroup $(GALLERY_RESOURCEGROUP) `
                   -GalleryName $(GALLERY_NAME)
       env:
