@@ -8,10 +8,13 @@ param(
     [String] [Parameter (Mandatory=$true)] $StorageAccount,
     [String] [Parameter (Mandatory=$true)] $SubscriptionId,
     [String] [Parameter (Mandatory=$true)] $TenantId,
+    [String] [Parameter (Mandatory=$true)] $CaptureNamePrefix,
+    [String] [Parameter (Mandatory=$true)] $GalleryResourceGrou,
+    [String] [Parameter (Mandatory=$true)] $GalleryName,
     [String] [Parameter (Mandatory=$false)] $VirtualNetworkName,
     [String] [Parameter (Mandatory=$false)] $VirtualNetworkRG,
     [String] [Parameter (Mandatory=$false)] $VirtualNetworkSubnet
-)
+    )
 
 if (-not (Test-Path $TemplatePath))
 {
@@ -53,9 +56,9 @@ packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
                 -var "virtual_network_resource_group_name=$VirtualNetworkRG" `
                 -var "virtual_network_subnet_name=$VirtualNetworkSubnet" `
                 -var "run_validation_diskspace=$env:RUN_VALIDATION_FLAG" `
-                -var "capture_name_prefix"=
-                -var "managed_image_resource_group_name"=
-                -var "shared_image_gallery_destination"=
+                -var "capture_name_prefix"=$CaptureNamePrefix `
+                -var "managed_image_resource_group_name"=$GalleryResourceGroup `
+                -var "shared_image_gallery_destination"=$GalleryName
                 -color=false `
                 $TemplatePath `
         | Foreach-Object { 
