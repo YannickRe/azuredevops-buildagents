@@ -148,7 +148,7 @@ stages:
                   -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
                   -GalleryName $(GALLERY_NAME) `
                   -CaptureNamePrefix $(setVars.ResourcesNamePrefix)
-                  -ImageType $(ImageType) 
+                  -ImageType ${{ parameters.image_type }}
       env:
         PACKER_LOG: 1
         PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
