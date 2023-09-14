@@ -148,6 +148,7 @@ stages:
                   -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
                   -GalleryName $(GALLERY_NAME) `
                   -CaptureNamePrefix $(setVars.ResourcesNamePrefix)
+                  -ImageType $(ImageType) 
       env:
         PACKER_LOG: 1
         PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
@@ -192,18 +193,18 @@ stages:
 #      agent_pool: ${{ parameters.agent_pool }}
 #      repository_base_path: ${{ parameters.repository_base_path }}
 
-#- stage: create_gallery_imagevm
-#  displayName:  'Create Gallery Image Version VM'
-#  condition: and(succeeded(), eq('${{ parameters.update_type }}', 'galleryvm'))
-#  dependsOn: 
-#    - buildagent_template_vm
-#    - convert_template_to_managedvm
-#  jobs:
-#  - template: buildagent-generation-galleryvm.yml
-#    parameters: 
-#      variable_group: ${{ parameters.variable_group }}
-#      agent_pool: ${{ parameters.agent_pool }}
-#      repository_base_path: ${{ parameters.repository_base_path }}
+- stage: create_gallery_imagevm
+  displayName:  'Create Gallery Image Version VM'
+  condition: and(succeeded(), eq('${{ parameters.update_type }}', 'galleryvm'))
+  dependsOn: 
+    - buildagent_template_vm
+    #- convert_template_to_managedvm
+  jobs:
+  - template: buildagent-generation-galleryvm.yml
+    parameters: 
+      variable_group: ${{ parameters.variable_group }}
+      agent_pool: ${{ parameters.agent_pool }}
+      repository_base_path: ${{ parameters.repository_base_path }}
 
 #- stage: update_vmss_imagevm
 #  displayName:  'Update VM Scale Set to new Image'

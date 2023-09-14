@@ -11,9 +11,11 @@ param(
     [String] [Parameter (Mandatory=$true)] $CaptureNamePrefix,
     [String] [Parameter (Mandatory=$true)] $GalleryResourceGroup,
     [String] [Parameter (Mandatory=$true)] $GalleryName,
+    [String] [Parameter (Mandatory=$true)] $ImageType, 
     [String] [Parameter (Mandatory=$false)] $VirtualNetworkName,
     [String] [Parameter (Mandatory=$false)] $VirtualNetworkRG,
     [String] [Parameter (Mandatory=$false)] $VirtualNetworkSubnet
+
     )
 
 if (-not (Test-Path $TemplatePath))
@@ -42,8 +44,7 @@ Write-Host "Show Packer Version"
 packer --version
 
 Write-Host "Build $Image VM"
-packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
-                -var "client_id=$ClientId" `
+packer build    -var "client_id=$ClientId" `
                 -var "client_secret=$ClientSecret" `
                 -var "install_password=$InstallPassword" `
                 -var "location=$Location" `
@@ -55,8 +56,9 @@ packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
                 -var "virtual_network_resource_group_name=$VirtualNetworkRG" `
                 -var "virtual_network_subnet_name=$VirtualNetworkSubnet" `
                 -var "run_validation_diskspace=$env:RUN_VALIDATION_FLAG" `
+                -var "capture_name_prefix=$CaptureNamePrefix" `
+                -var "managed_image_name=$ImageType-$ResourcesNamePrefix"`
                 -var "managed_image_resource_group_name=$ResourceGroup" `
-                -var "shared_image_gallery_destination=$GalleryName" `
                 -color=false `
                 $TemplatePath `
         | Foreach-Object { 
