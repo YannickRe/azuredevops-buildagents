@@ -20,8 +20,6 @@ jobs:
   pool: 
     name: ${{ parameters.agent_pool }}
   variables:
-  - name: ManagedImageId
-    value: $[stageDependencies.convert_template_to_managedvm.managedimagegeneration.outputs['createmanagedimage.ManagedImageId'] ]
   - name: ImageType
     value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ImageType'] ]
   - name: ResourcesNamePrefix
