@@ -47,5 +47,4 @@ jobs:
                  -Location $(AZURE_LOCATION) `
                  -GalleryName $(GALLERY_NAME) `
                  -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
-                 -ImageType $(ImageType) `
-                 -ManagedImageId $(ManagedImageId)
+                 -ImageType $(ImageType) 
