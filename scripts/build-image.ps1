@@ -47,7 +47,6 @@ packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
                 -var "client_secret=$ClientSecret" `
                 -var "install_password=$InstallPassword" `
                 -var "location=$Location" `
-                -var "resource_group=$ResourceGroup" `
                 -var "storage_account=$StorageAccount" `
                 -var "subscription_id=$SubscriptionId" `
                 -var "temp_resource_group_name=$TempResourceGroupName" `
@@ -56,7 +55,7 @@ packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
                 -var "virtual_network_resource_group_name=$VirtualNetworkRG" `
                 -var "virtual_network_subnet_name=$VirtualNetworkSubnet" `
                 -var "run_validation_diskspace=$env:RUN_VALIDATION_FLAG" `
-                -var "managed_image_resource_group_name"=$GalleryResourceGroup `
+                -var "managed_image_resource_group_name"=$ResourceGroup `
                 -var "shared_image_gallery_destination"=$GalleryName `
                 -color=false `
                 $TemplatePath `
