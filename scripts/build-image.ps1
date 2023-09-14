@@ -9,7 +9,7 @@ param(
     [String] [Parameter (Mandatory=$true)] $SubscriptionId,
     [String] [Parameter (Mandatory=$true)] $TenantId,
     [String] [Parameter (Mandatory=$true)] $CaptureNamePrefix,
-    [String] [Parameter (Mandatory=$true)] $GalleryResourceGrou,
+    [String] [Parameter (Mandatory=$true)] $GalleryResourceGroup,
     [String] [Parameter (Mandatory=$true)] $GalleryName,
     [String] [Parameter (Mandatory=$false)] $VirtualNetworkName,
     [String] [Parameter (Mandatory=$false)] $VirtualNetworkRG,
