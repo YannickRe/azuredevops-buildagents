@@ -145,7 +145,7 @@ stages:
                   -VirtualNetworkRG $(BUILD_AGENT_VNET_RESOURCE_GROUP) `
                   -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME) `
                   -Location $(AZURE_LOCATION) `
-                  -GalleryResourceGroup $(GALLERY_RESOURCEGROUP) `
+                  -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
                   -GalleryName $(GALLERY_NAME)
       env:
         PACKER_LOG: 1
