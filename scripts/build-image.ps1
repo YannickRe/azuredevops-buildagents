@@ -57,7 +57,7 @@ packer build    -var "client_id=$ClientId" `
                 -var "virtual_network_subnet_name=$VirtualNetworkSubnet" `
                 -var "run_validation_diskspace=$env:RUN_VALIDATION_FLAG" `
                 -var "capture_name_prefix=$CaptureNamePrefix" `
-                -var "managed_image_name=$ImageType-$ResourcesNamePrefix"`
+                -var "managed_image_name=$ImageType-$ResourcesNamePrefix" `
                 -var "managed_image_resource_group_name=$ResourceGroup" `
                 -color=false `
                 $TemplatePath `
