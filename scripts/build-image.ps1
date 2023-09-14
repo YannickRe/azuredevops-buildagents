@@ -57,7 +57,8 @@ packer build    -var "capture_name_prefix=$ResourcesNamePrefix" `
                 -var "virtual_network_subnet_name=$VirtualNetworkSubnet" `
                 -var "run_validation_diskspace=$env:RUN_VALIDATION_FLAG" `
                 -var "managed_image_resource_group_name"=$GalleryResourceGroup `
-                -var "shared_image_gallery_destination"=$GalleryName
+                -var "shared_image_gallery_destination"=$GalleryName `
+                -color=false `
                 $TemplatePath `
         | Foreach-Object { 
             $currentString = $_
