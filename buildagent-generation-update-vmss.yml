@@ -22,7 +22,7 @@ jobs:
   cancelTimeoutInMinutes: 30
   pool: 
     name: ${{ parameters.agent_pool }}
-    
+
   variables:
   - name: ImageType
     value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ImageType'] ]
@@ -47,5 +47,6 @@ jobs:
                  -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
-                 -VmssNames $(VmssNames) `
                  -ResourceNamePrefix $(ResourcesNamePrefix)
+                 -ImageType $(ImageType)
+                 -VmssNames $(VmssNames) `
