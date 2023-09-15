@@ -4,7 +4,9 @@ param(
     [String] [Parameter (Mandatory=$true)] $TenantId,
     [String] [Parameter (Mandatory=$true)] $SubscriptionId,
     [String] [Parameter (Mandatory=$true)] $ResourceGroup,
-    [String] [Parameter (Mandatory=$true)] $VmssNames
+    [String] [Parameter (Mandatory=$true)] $VmssNames,
+    [String] [Parameter (Mandatory=$true)] $ResourcesNamePrefix,
+    [String] [Parameter (Mandatory=$true)] $ImageType
 )
 
 az login --service-principal --username $ClientId --password $ClientSecret --tenant $TenantId | Out-Null

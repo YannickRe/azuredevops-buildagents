@@ -15,6 +15,13 @@ parameters:
   displayName: VmssNames
   type: string
 
+variables:
+  - name: ImageType
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ImageType'] ]
+  - name: ResourcesNamePrefix
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ResourcesNamePrefix'] ]
+  - group: ${{ parameters.variable_group }}
+  
 jobs:
 - job: updatevmss
   displayName: Update Virtual Machine Scale Set
@@ -44,4 +51,4 @@ jobs:
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
                  -VmssNames $(VmssNames) `
-                 -ManagedImageId $(ManagedImageId)
+                 -ResourceNamePrefix $(ResourcesNamePrefix)
