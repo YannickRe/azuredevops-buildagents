@@ -58,7 +58,7 @@ if ($gallery) {
                
             if ($images.Count -ge $ImageCountThreshold) {
                 # Sort the images by creation timestamp in ascending order
-                $sortedImages = $images |  Sort-Object -Property { [DateTime]::ParseExact($_.PublishingProfile.PublishedDate, 'MM/dd/yyyy HH:mm:ss', $null) }
+                $sortedImages = $images | Sort-Object -Property { [DateTime]::ParseExact($_.PublishingProfile.PublishedDate, 'MM/dd/yyyy HH:mm:ss', $null) }
 
                 # Remove the oldest image
                 $imageToRemove = $sortedImages[0]
