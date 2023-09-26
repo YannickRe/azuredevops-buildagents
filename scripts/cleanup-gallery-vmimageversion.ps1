@@ -60,7 +60,7 @@ if ($gallery) {
                 # Sort the images by creation timestamp in ascending order
                 $sortedImages = $images | Sort-Object -Property { [DateTime]::ParseExact($_.PublishingProfile.PublishedDate, 'MM/dd/yyyy HH:mm:ss', $null) }
 
-                # Remove all images except the two most recent ones
+                # Remove all images except the most recent ones
                 $imagesToRemove = $sortedImages[0..($sortedImages.Count - $ImageCountThreshold - 1)]
                 foreach ($imageToRemove in $imagesToRemove) {
                     Write-Host "##[section]Removing image version for image definition '$imageDefinition': $($imageToRemove.Name)"
