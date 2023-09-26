@@ -60,12 +60,13 @@ if ($gallery) {
                 # Sort the images by creation timestamp in ascending order
                 $sortedImages = $images | Sort-Object -Property { [DateTime]::ParseExact($_.PublishingProfile.PublishedDate, 'MM/dd/yyyy HH:mm:ss', $null) }
 
-                # Remove the oldest image
-                $imageToRemove = $sortedImages[0]
-
-                Write-Host "##[section]Removing the oldest image version for image definition '$imageDefinition': $($imageToRemove.Name)"
-                Remove-AzGalleryImageVersion -ResourceGroupName $GalleryResourceGroup -GalleryName $gallery.Name -GalleryImageDefinitionName $imageDefinition -Name $imageToRemove.Name -Force -AsJob 
-            } else {
+                # Remove all images except the two most recent ones
+                $imagesToRemove = $sortedImages[0..($sortedImages.Count - $ImageCountThreshold - 1)]
+                foreach ($imageToRemove in $imagesToRemove) {
+                    Write-Host "##[section]Removing image version for image definition '$imageDefinition': $($imageToRemove.Name)"
+                    Remove-AzGalleryImageVersion -ResourceGroupName $GalleryResourceGroup -GalleryName $gallery.Name -GalleryImageDefinitionName $imageDefinition -Name $imageToRemove.Name -Force -AsJob 
+                }
+                } else {
                 Write-Host "##[section]The number of images for image definition '$imageDefinition' is less than $ImageCountThreshold"
             }
         }
