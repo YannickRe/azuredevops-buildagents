@@ -11,6 +11,7 @@ parameters:
   default: 2
 - name: agent_pool
   displayName: Agent Pool
+  default: 'Host Pool - Image'
   type: string
 - name: repository_base_path
   displayName: Scripts Path
