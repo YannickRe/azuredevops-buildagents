@@ -1,4 +1,3 @@
-
 param(
     [String] [Parameter (Mandatory=$true)] $ClientId,
     [String] [Parameter (Mandatory=$true)] $ClientSecret,
@@ -7,7 +6,7 @@ param(
     [String] [Parameter (Mandatory=$true)] $ResourceGroup,
     [String] [Parameter (Mandatory=$true)] $GalleryName,
     [String] [Parameter (Mandatory=$true)] $GalleryResourceGroup,
-    [int] [Parameter (Mandatory=$true)] $ImageCountThreshold
+    [int] [Parameter (Mandatory=$true)] $GalleryImagesToKeep 
 )
 
 # Variables
@@ -17,6 +16,7 @@ $imageDefinitions = @(
     "windows2019-agentpool-full",
     "windows2022-agentpool-full"
 )
+$ImageCountThreshold = $GalleryImagesToKeep + 1
 
 # install required modules
 install-module Az.Compute -Scope CurrentUser -AllowClobber -Force
@@ -58,16 +58,17 @@ if ($gallery) {
                
             if ($images.Count -ge $ImageCountThreshold) {
                 # Sort the images by creation timestamp in ascending order
-                $sortedImages = $images | Sort-Object -Property { [DateTime]::ParseExact($_.PublishingProfile.PublishedDate, 'MM/dd/yyyy HH:mm:ss', $null) }
+                #$sortedImages = $images | Sort-Object -Property { [DateTime]::ParseExact($_.PublishingProfile.PublishedDate, 'dd/MM/yyyy HH:mm:ss', $null) } 
+                $sortedImages = $images | Sort-Object -Property $_.PublishingProfile.PublishedDate 
 
                 # Remove all images except the most recent ones
-                $imagesToRemove = $sortedImages[0..($sortedImages.Count - $ImageCountThreshold - 1)]
+                $imagesToRemove = $sortedImages[0..($sortedImages.Count - $GalleryImagesToKeep - 1 )]
                 foreach ($imageToRemove in $imagesToRemove) {
-                    Write-Host "##[section]Removing image version for image definition '$imageDefinition': $($imageToRemove.Name)"
+                    Write-Host "##[section]Removing image version for image definition '$imageDefinition': $($imageToRemove.Name) with $($imageToRemove.PublishingProfile.PublishedDate)"
                     Remove-AzGalleryImageVersion -ResourceGroupName $GalleryResourceGroup -GalleryName $gallery.Name -GalleryImageDefinitionName $imageDefinition -Name $imageToRemove.Name -Force -AsJob
                 }
                 } else {
-                Write-Host "##[section]The number of images for image definition '$imageDefinition' is less than $ImageCountThreshold"
+                Write-Host "##[section]The number of images for image definition '$imageDefinition' has no more than $GalleryImagesToKeep images. No images will be removed."
             }
         }
    }

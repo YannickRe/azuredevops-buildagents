@@ -1,16 +1,20 @@
+trigger: none
+
 parameters:
 - name: variable_group
   displayName: Variable Group
   type: string
   default: BuildAgents
-- name: gallery_threshold
+- name: gallery_images_to_keep
   displayName: Number of image versions to keep in gallery
   type: number
-  default: 3
+  default: 2
 - name: agent_pool
   displayName: Agent Pool
   type: string
-  default: 'Host Pool - Image'
+  default: 'PZH-BuildAgent'
+  values:
+  - PZH-BuildAgent
 - name: repository_base_path
   displayName: Scripts Path
   type: string
@@ -23,6 +27,7 @@ jobs:
     name: ${{ parameters.agent_pool }}
   variables:
   - group: ${{ parameters.variable_group }}
+
 
   steps:
   - checkout: self
@@ -40,4 +45,5 @@ jobs:
                  -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
                  -GalleryName $(GALLERY_NAME) `
                  -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
-                 -ImageCountThreshold ${{ parameters.gallery_threshold }}
+                 -GalleryImagesToKeep ${{ parameters.gallery_images_to_keep }}
+
