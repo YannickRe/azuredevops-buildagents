@@ -64,7 +64,7 @@ if ($gallery) {
                 $imagesToRemove = $sortedImages[0..($sortedImages.Count - $ImageCountThreshold - 1)]
                 foreach ($imageToRemove in $imagesToRemove) {
                     Write-Host "##[section]Removing image version for image definition '$imageDefinition': $($imageToRemove.Name)"
-                    Remove-AzGalleryImageVersion -ResourceGroupName $GalleryResourceGroup -GalleryName $gallery.Name -GalleryImageDefinitionName $imageDefinition -Name $imageToRemove.Name -Force 
+                    Remove-AzGalleryImageVersion -ResourceGroupName $GalleryResourceGroup -GalleryName $gallery.Name -GalleryImageDefinitionName $imageDefinition -Name $imageToRemove.Name -Force -AsJob
                 }
                 } else {
                 Write-Host "##[section]The number of images for image definition '$imageDefinition' is less than $ImageCountThreshold"
