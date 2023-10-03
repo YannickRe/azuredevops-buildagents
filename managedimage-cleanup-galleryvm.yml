@@ -12,9 +12,6 @@ parameters:
 - name: agent_pool
   displayName: Agent Pool
   type: string
-  default: 'PZH-BuildAgent'
-  values:
-  - PZH-BuildAgent
 - name: repository_base_path
   displayName: Scripts Path
   type: string
