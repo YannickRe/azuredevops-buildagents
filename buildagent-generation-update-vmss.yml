@@ -14,7 +14,7 @@ parameters:
 - name: vmss_names
   displayName: VmssNames
   type: string
-
+  
 jobs:
 - job: updatevmss
   displayName: Update Virtual Machine Scale Set
@@ -22,9 +22,13 @@ jobs:
   cancelTimeoutInMinutes: 30
   pool: 
     name: ${{ parameters.agent_pool }}
+
   variables:
-  - name: ManagedImageId
-    value: $[stageDependencies.convert_template_to_managedvm.managedimagegeneration.outputs['createmanagedimage.ManagedImageId'] ]
+  - name: ImageType
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ImageType'] ]
+  - name: ResourcesNamePrefix
+    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ResourcesNamePrefix'] ]
+  - group: ${{ parameters.variable_group }}
   - name: VmssNames
     value: ${{ parameters.vmss_names }}
   - group: ${{ parameters.variable_group }}
@@ -43,5 +47,6 @@ jobs:
                  -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
+                 -ResourceNamePrefix $(ResourcesNamePrefix)
+                 -ImageType $(ImageType)
                  -VmssNames $(VmssNames) `
-                 -ManagedImageId $(ManagedImageId)
