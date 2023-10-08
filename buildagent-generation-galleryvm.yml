@@ -40,7 +40,7 @@ jobs:
       arguments: -ResourcesNamePrefix $(ResourcesNamePrefix) `
                  -ClientId $(CLIENT_ID) `
                  -ClientSecret $(CLIENT_SECRET) `
-                 -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
+                 -ResourceGroup $(AZURE_RESOURCE_GROUP) `
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
                  -Location $(AZURE_LOCATION) `
