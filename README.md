@@ -37,11 +37,7 @@ Connect-AzAccount -UseDeviceAuthentication
 ```
 New-AzResourceGroup -Name "DevOps-PackerResources" -Location "West Europe"
 ```
-3. Create an Azure Storage Account to store the generated VHD
-```
-New-AzStorageAccount -ResourceGroupName "DevOps-PackerResources" -AccountName "devopspacker" -Location "West Europe" -SkuName "Standard_LRS"
-```
-4. Create Azure AD Service Principal, output client secret and client id
+3. Create Azure AD Service Principal, output client secret and client id
 ```
 $sp = New-AzADServicePrincipal -DisplayName "DevOps-Packer"
 $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($sp.Secret)
@@ -49,13 +45,9 @@ $plainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR
 $plainPassword
 $sp.ApplicationId
 ```
-5. Make the Service Principal a Contributor on the subscription
+4. Make the Service Principal a Contributor on the subscription
 ```
 New-AzRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName $sp.ApplicationId
-```
-6. Make the Service Principal a Storage Blob Data Contributor on the subscription
-```
-New-AzRoleAssignment -RoleDefinitionName "Storage Blob Data Contributor" -ServicePrincipalName $sp.ApplicationId
 ```
 
 ### Azure Virtual Machine Scale Set
@@ -77,8 +69,7 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 |---|---|
 | AZURE_AGENTS_RESOURCE_GROUP | Resource Group that contains the Virtual Machine Scale Sets to be used as Scale Set Agents in Azure DevOps |
 | AZURE_LOCATION | Azure location where Packer will create the temporary resources |
-| AZURE_RESOURCE_GROUP | Resource group containing the Azure Storage Account that will be used by Packer. The resulting Azure Managed Image will also be put in this Resource Group |
-| AZURE_STORAGE_ACCOUNT | Storage Account that Packer will use to store the temporary OSDisk and the resulting sysprepped .vhd |
+| AZURE_RESOURCE_GROUP | Resource group that will be used by Packer to put the resulting Azure Managed Image. |
 | AZURE_SUBSCRIPTION | Subscription ID of the Azure Subscription that is used to host the temporary resources. |
 | BUILD_AGENT_VNET_NAME | Name of the existing VNet to use for the VM created by Packer, put $null if you want packer to create a new one |
 | BUILD_AGENT_VNET_RESOURCE_GROUP | Name of the resource group containing the existing VNet to use for the VM created by Packer, put $null if you don't have this |
