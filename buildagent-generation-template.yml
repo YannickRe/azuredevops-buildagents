@@ -179,8 +179,7 @@ stages:
                   -ClientSecret $(CLIENT_SECRET) `
                   -Image $(setVars.ImageType) `
                   -SubscriptionId $(AZURE_SUBSCRIPTION) `
-                  -TenantId $(AZURE_TENANT) `
-                  -StorageAccount $(AZURE_STORAGE_ACCOUNT)
+                  -TenantId $(AZURE_TENANT)
 
 - stage: create_gallery_imagevm
   displayName:  'Create Gallery Image Version VM'
