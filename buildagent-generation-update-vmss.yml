@@ -44,7 +44,8 @@ jobs:
       filePath: ${{ parameters.repository_base_path }}/scripts/update-vmss.ps1
       arguments: -ClientId $(CLIENT_ID) `
                  -ClientSecret $(CLIENT_SECRET) `
-                 -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
+                 -ResourceGroup $(AZURE_RESOURCE_GROUP) `
+                 -AgentsResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
                  -ResourceNamePrefix $(ResourcesNamePrefix)
