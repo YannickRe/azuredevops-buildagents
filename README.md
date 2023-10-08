@@ -8,9 +8,8 @@ Currently supports Windows Server 2019, Windows Server 2022, Ubuntu 2004 and Ubu
   - Checkout the latest `main` branch from [actions/runner-images](https://github.com/actions/runner-images)
   - Build the VM with Packer  
   - Clean up remaining temporary Azure resources  
-  - Turn VM disk into Azure Managed Image  
   - Add Azure Managed Image to Azure Compute Gallery or Update Virtual Machine Scale Set with the new image
-  - Remove Azure Managed Image
+  - Remove Azure Managed Image when using Azure Compute Gallery
 - __[managedimage-cleanup.yml](./managedimage-cleanup.yml)__  
   - Remove unused Azure Managed Images or old Gallery image versions, depending on selection
 
@@ -149,7 +148,7 @@ When calling a template, you must provide certain parameters. For reference, ple
 There is one important element you must be aware of: 
 
 - repository_base_path
-  - This variable dictactes how the agent should resolve the assets within this repository. When used, two things will happen:
+  - This variable dictates how the agent should resolve the assets within this repository. When used, two things will happen:
     - First, it will clone the repository resource specified within your YML file, which represents _this_ repository
     - It will also use it to properly resolve the path where this repository resides on your pipeline agent
   - When a remote template is referenced within an Azure Pipeline YML file, it doesn't clone the repository. Providing this parameter will make sure these templates understands they need to clone it before being able to run any of the scripts.
