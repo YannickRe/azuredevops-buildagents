@@ -8,9 +8,8 @@ Currently supports Windows Server 2019, Windows Server 2022, Ubuntu 2004 and Ubu
   - Checkout the latest `main` branch from [actions/runner-images](https://github.com/actions/runner-images)
   - Build the VM with Packer  
   - Clean up remaining temporary Azure resources  
-  - Turn VM disk into Azure Managed Image  
   - Add Azure Managed Image to Azure Compute Gallery or Update Virtual Machine Scale Set with the new image
-  - Remove Azure Managed Image
+  - Remove Azure Managed Image when using Azure Compute Gallery
 - __[managedimage-cleanup.yml](./managedimage-cleanup.yml)__  
   - Remove unused Azure Managed Images or old Gallery image versions, depending on selection
 
@@ -37,11 +36,7 @@ Connect-AzAccount -UseDeviceAuthentication
 ```
 New-AzResourceGroup -Name "DevOps-PackerResources" -Location "West Europe"
 ```
-3. Create an Azure Storage Account to store the generated VHD
-```
-New-AzStorageAccount -ResourceGroupName "DevOps-PackerResources" -AccountName "devopspacker" -Location "West Europe" -SkuName "Standard_LRS"
-```
-4. Create Azure AD Service Principal, output client secret and client id
+3. Create Azure AD Service Principal, output client secret and client id
 ```
 $sp = New-AzADServicePrincipal -DisplayName "DevOps-Packer"
 $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($sp.Secret)
@@ -49,13 +44,9 @@ $plainPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR
 $plainPassword
 $sp.ApplicationId
 ```
-5. Make the Service Principal a Contributor on the subscription
+4. Make the Service Principal a Contributor on the subscription
 ```
 New-AzRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName $sp.ApplicationId
-```
-6. Make the Service Principal a Storage Blob Data Contributor on the subscription
-```
-New-AzRoleAssignment -RoleDefinitionName "Storage Blob Data Contributor" -ServicePrincipalName $sp.ApplicationId
 ```
 
 ### Azure Virtual Machine Scale Set
@@ -77,8 +68,7 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 |---|---|
 | AZURE_AGENTS_RESOURCE_GROUP | Resource Group that contains the Virtual Machine Scale Sets to be used as Scale Set Agents in Azure DevOps |
 | AZURE_LOCATION | Azure location where Packer will create the temporary resources |
-| AZURE_RESOURCE_GROUP | Resource group containing the Azure Storage Account that will be used by Packer. The resulting Azure Managed Image will also be put in this Resource Group |
-| AZURE_STORAGE_ACCOUNT | Storage Account that Packer will use to store the temporary OSDisk and the resulting sysprepped .vhd |
+| AZURE_RESOURCE_GROUP | Resource group that will be used by Packer to put the resulting Azure Managed Image. |
 | AZURE_SUBSCRIPTION | Subscription ID of the Azure Subscription that is used to host the temporary resources. |
 | BUILD_AGENT_VNET_NAME | Name of the existing VNet to use for the VM created by Packer, put $null if you want packer to create a new one |
 | BUILD_AGENT_VNET_RESOURCE_GROUP | Name of the resource group containing the existing VNet to use for the VM created by Packer, put $null if you don't have this |
@@ -158,7 +148,7 @@ When calling a template, you must provide certain parameters. For reference, ple
 There is one important element you must be aware of: 
 
 - repository_base_path
-  - This variable dictactes how the agent should resolve the assets within this repository. When used, two things will happen:
+  - This variable dictates how the agent should resolve the assets within this repository. When used, two things will happen:
     - First, it will clone the repository resource specified within your YML file, which represents _this_ repository
     - It will also use it to properly resolve the path where this repository resides on your pipeline agent
   - When a remote template is referenced within an Azure Pipeline YML file, it doesn't clone the repository. Providing this parameter will make sure these templates understands they need to clone it before being able to run any of the scripts.

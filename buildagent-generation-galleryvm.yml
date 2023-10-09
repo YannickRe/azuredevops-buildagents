@@ -19,9 +19,8 @@ jobs:
   cancelTimeoutInMinutes: 90
   pool: 
     name: ${{ parameters.agent_pool }}
+    
   variables:
-  - name: ManagedImageId
-    value: $[stageDependencies.convert_template_to_managedvm.managedimagegeneration.outputs['createmanagedimage.ManagedImageId'] ]
   - name: ImageType
     value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ImageType'] ]
   - name: ResourcesNamePrefix
@@ -41,11 +40,10 @@ jobs:
       arguments: -ResourcesNamePrefix $(ResourcesNamePrefix) `
                  -ClientId $(CLIENT_ID) `
                  -ClientSecret $(CLIENT_SECRET) `
-                 -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
+                 -ResourceGroup $(AZURE_RESOURCE_GROUP) `
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
                  -Location $(AZURE_LOCATION) `
                  -GalleryName $(GALLERY_NAME) `
                  -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
-                 -ImageType $(ImageType) `
-                 -ManagedImageId $(ManagedImageId)
+                 -ImageType $(ImageType) 
