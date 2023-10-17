@@ -46,7 +46,6 @@ Write-Host "Build $Image VM"
 packer build    -var "client_id=$ClientId" `
                 -var "client_secret=$ClientSecret" `
                 -var "install_password=$InstallPassword" `
-#                -var "location=$Location" `
                 -var "subscription_id=$SubscriptionId" `
                 -var "build_resource_group_name=rg-ado-vmss-image-build-platform-001" `
                 -var "tenant_id=$TenantId" `
