@@ -24,8 +24,7 @@ if (-not (Test-Path $TemplatePath))
 }
 
 $Image = [io.path]::GetFileName($TemplatePath).Split(".")[0]
-#$TempResourceGroupName = "${ResourcesNamePrefix}_${Image}"
-$TempResourceGroupName = "rg-ado-vm-build-platform-001"
+$TempResourceGroupName = "${ResourcesNamePrefix}_${Image}"
 $InstallPassword = [System.GUID]::NewGuid().ToString().ToUpper()
 
 packer validate -syntax-only $TemplatePath
@@ -49,7 +48,8 @@ packer build    -var "client_id=$ClientId" `
                 -var "install_password=$InstallPassword" `
                 -var "location=$Location" `
                 -var "subscription_id=$SubscriptionId" `
-                -var "temp_resource_group_name=$TempResourceGroupName" `
+#                -var "temp_resource_group_name=$TempResourceGroupName" `
+                -var "build_resource_group_name=rg-ado-vmss-image-build-platform-001"
                 -var "tenant_id=$TenantId" `
                 -var "virtual_network_name=$VirtualNetworkName" `
                 -var "virtual_network_resource_group_name=$VirtualNetworkRG" `
