@@ -48,7 +48,6 @@ packer build    -var "client_id=$ClientId" `
                 -var "install_password=$InstallPassword" `
                 -var "location=$Location" `
                 -var "subscription_id=$SubscriptionId" `
-#                -var "temp_resource_group_name=$TempResourceGroupName" `
                 -var "build_resource_group_name=rg-ado-vmss-image-build-platform-001"
                 -var "tenant_id=$TenantId" `
                 -var "virtual_network_name=$VirtualNetworkName" `
