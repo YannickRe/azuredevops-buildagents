@@ -98,7 +98,8 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          $ResourcesNamePrefix = "$(Build.BuildId)"
+          #$ResourcesNamePrefix = "$(Build.BuildId)"
+          $ResourcesNamePrefix = "rg-ado-vm-build"
           $ImageType = "${{ parameters.image_type }}"
           $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "linux" } else { "win" }
           $OsType = if ($ImageType.StartsWith("ubuntu")) { "Linux" } else { "Windows" }
