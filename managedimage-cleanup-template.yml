@@ -14,7 +14,7 @@ parameters:
   values:
   - galleryvm
   - vmss
-- name: gallery_threshold
+- name: gallery_images_to_keep
   displayName: Number of image versions to keep in gallery
   type: number
   default: 3
@@ -33,7 +33,7 @@ stages:
       variable_group: ${{ parameters.variable_group }}
       agent_pool: ${{ parameters.agent_pool }}
       repository_base_path: ${{ parameters.repository_base_path }}
-      gallery_threshold: ${{ parameters.gallery_threshold }}
+      gallery_images_to_keep: ${{ parameters.gallery_images_to_keep }}
 
 - stage: delete_vmss_imagevm
   displayName:  'Delete orphaned Managed Images'
