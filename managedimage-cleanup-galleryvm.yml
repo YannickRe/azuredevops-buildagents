@@ -1,5 +1,3 @@
-trigger: none
-
 parameters:
 - name: variable_group
   displayName: Variable Group
