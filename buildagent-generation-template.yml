@@ -101,7 +101,7 @@ stages:
         script: |
           $ImageType = "${{ parameters.image_type }}"
           $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu/templates" } else { "windows/templates" }
-          $TemplateDirectoryPath = Join-Path "images" $TemplateDirectoryName | Resolve-Path
+          $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
 
           if (${{ parameters.image_type }} -eq "ubuntu2004") {
             Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2004-Readme.md"
