@@ -103,19 +103,22 @@ stages:
           $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu/templates" } else { "windows/templates" }
           $TemplateDirectoryPath = Join-Path "images" $TemplateDirectoryName | Resolve-Path
 
-          if [ "$(parameters.image_type)" == "ubuntu2004" ]; then
-                Write-Host  "##vso[task.setvariable variable=image_readme_name]Ubuntu2004-Readme.md"
-                $image_template_name = "ubuntu-20.04.json"
-              elseif [ "$(parameters.image_type)" == "ubuntu2204" ]; then
-                Write-Host  "##vso[task.setvariable variable=image_readme_name]Ubuntu2204-Readme.md"
-                $image_template_name = "ubuntu-22.04.pkr.hcl"
-              elseif [ "$(parameters.image_type)" == "windows2019" ]; then
-                Write-Host  "##vso[task.setvariable variable=image_readme_name]Windows2019-Readme.md"
-                $image_template_name = "windows-2019.json"
-              elseif [ "$(parameters.image_type)" == "windows2022" ]; then
-                Write-Host  "##vso[task.setvariable variable=image_readme_name]Windows2022-Readme.md"
-                $image_template_name = "windows-2022.json"
-              fi  
+          if (${{ parameters.image_type }} -eq "ubuntu2004") {
+            Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2004-Readme.md"
+            $image_template_name = "ubuntu-20.04.json"
+          }
+          elseif (${{ parameters.image_type }} -eq "ubuntu2204") {
+            Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2204-Readme.md"
+            $image_template_name = "ubuntu-22.04.pkr.hcl"
+          }
+          elseif (${{ parameters.image_type }} -eq "windows2019") {
+            Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2019-Readme.md"
+            $image_template_name = "windows-2019.json"
+          }
+          elseif (${{ parameters.image_type }} -eq "windows2022") {
+            Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2022-Readme.md"
+            $image_template_name = "windows-2022.json"
+          }
 
           $TemplateFileName = "$image_template_name"
           if ($TemplateFileName) {
