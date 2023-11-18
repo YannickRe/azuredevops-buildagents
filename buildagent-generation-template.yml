@@ -40,9 +40,6 @@ parameters:
   - galleryvm
   - vmss
 
-
-
-
 stages:
 - stage: buildagent_template_vm
   displayName: 'Build Agent Template VM'
@@ -95,6 +92,7 @@ stages:
             cd runner-images
             git checkout ($latest_release.tag_name)
           }
+          
     - task: PowerShell@2
       name: setVars
       displayName: 'Set image template variables'
@@ -136,8 +134,6 @@ stages:
                 Write-Host  "##vso[task.setvariable variable=image_readme_name]Windows2022-Readme.md"
                 Write-Host "##vso[task.setvariable variable=image_template_name]windows-2022.json"
               fi  
-
-
 
     - task: PowerShell@2
       displayName: 'Workaround for issue: https://github.com/actions/runner-images/discussions/6251'
