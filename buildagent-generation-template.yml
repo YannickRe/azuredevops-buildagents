@@ -103,7 +103,21 @@ stages:
           $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu/templates" } else { "windows/templates" }
           $TemplateDirectoryPath = Join-Path "images" $TemplateDirectoryName | Resolve-Path
 
-          $TemplateFileName = "${{ parameters.image_template_name }}"
+          if [ "$(parameters.image_type)" == "ubuntu2004" ]; then
+                Write-Host  "##vso[task.setvariable variable=image_readme_name]Ubuntu2004-Readme.md"
+                $image_template_name = "ubuntu-20.04.json"
+              elseif [ "$(parameters.image_type)" == "ubuntu2204" ]; then
+                Write-Host  "##vso[task.setvariable variable=image_readme_name]Ubuntu2204-Readme.md"
+                $image_template_name = "ubuntu-22.04.pkr.hcl"
+              elseif [ "$(parameters.image_type)" == "windows2019" ]; then
+                Write-Host  "##vso[task.setvariable variable=image_readme_name]Windows2019-Readme.md"
+                $image_template_name = "windows-2019.json"
+              elseif [ "$(parameters.image_type)" == "windows2022" ]; then
+                Write-Host  "##vso[task.setvariable variable=image_readme_name]Windows2022-Readme.md"
+                $image_template_name = "windows-2022.json"
+              fi  
+
+          $TemplateFileName = "$image_template_name"
           if ($TemplateFileName) {
             $TemplatePath = Join-Path $TemplateDirectoryPath $TemplateFileName
           } else {
@@ -119,21 +133,7 @@ stages:
           Write-Host "##vso[task.setvariable variable=ManagedImageName;]$ManagedImageName"
 
           $TempResourceGroupName = "packer-temp-$ManagedImageName"
-          Write-Host "##vso[task.setvariable variable=TempResourceGroupName;]$TempResourceGroupName"
-
-          if [ "$(parameters.image_type)" == "ubuntu2004" ]; then
-                Write-Host  "##vso[task.setvariable variable=image_readme_name]Ubuntu2004-Readme.md"
-                Write-Host  "##vso[task.setvariable variable=image_template_name]ubuntu-20.04.json"
-              elseif [ "$(parameters.image_type)" == "ubuntu2204" ]; then
-                Write-Host  "##vso[task.setvariable variable=image_readme_name]Ubuntu2204-Readme.md"
-                Write-Host  "##vso[task.setvariable variable=image_template_name]ubuntu-22.04.pkr.hcl"
-              elseif [ "$(parameters.image_type)" == "windows2019" ]; then
-                Write-Host  "##vso[task.setvariable variable=image_readme_name]Windows2019-Readme.md"
-                Write-Host  "##vso[task.setvariable variable=image_template_name]windows-2019.json"
-              elseif [ "$(parameters.image_type)" == "windows2022" ]; then
-                Write-Host  "##vso[task.setvariable variable=image_readme_name]Windows2022-Readme.md"
-                Write-Host "##vso[task.setvariable variable=image_template_name]windows-2022.json"
-              fi  
+          Write-Host "##vso[task.setvariable variable=TempResourceGroupName;]$TempResourceGroupName"  
 
     - task: PowerShell@2
       displayName: 'Workaround for issue: https://github.com/actions/runner-images/discussions/6251'
@@ -173,7 +173,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          Get-Content -Path "$(Build.ArtifactStagingDirectory)/${{ parameters.image_readme_name }}"
+          Get-Content -Path "$(Build.ArtifactStagingDirectory)/$(image_readme_name)"
 
     - task: PowerShell@2
       displayName: 'Print json software report'
