@@ -99,6 +99,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
+          $ResourcesNamePrefix = "$(Build.BuildId)"
           $ImageType = "${{ parameters.image_type }}"
           $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu/templates" } else { "windows/templates" }
           $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
