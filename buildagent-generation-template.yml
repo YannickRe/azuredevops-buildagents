@@ -173,6 +173,23 @@ stages:
         PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
 
     - task: PowerShell@2
+      displayName: 'Copy image artifacts to the separate directory'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $ImageType = "${{ parameters.image_type }}"
+          $rootDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu" } else { "windows" }
+          $rootDirectoryPath = Join-Path (Join-Path "runner-images" "images") $rootDirectoryName | Resolve-Path
+
+          $readmePath = Join-Path $rootDirectoryPath "${{ parameters.image_readme_name }}"
+          $softwareReportPath = Join-Path $rootDirectoryPath "software-report.json"
+
+          Copy-Item -Path $readmePath -Destination "$(Build.ArtifactStagingDirectory)/"
+          if (Test-Path $softwareReportPath) {
+              Copy-Item -Path $softwareReportPath -Destination "$(Build.ArtifactStagingDirectory)/"
+          }
+
+    - task: PowerShell@2
       displayName: 'Print markdown software report'
       inputs:
         targetType: 'inline'
