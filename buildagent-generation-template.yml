@@ -100,10 +100,10 @@ stages:
         targetType: 'inline'
         script: |
           $ResourcesNamePrefix = "$(Build.BuildId)"
-          Write-Host "##vso[task.setvariable variable=ResourcesNamePrefix;]$ResourcesNamePrefix"
+          Write-Host "##vso[task.setvariable variable=ResourcesNamePrefix;isOutput=true]$ResourcesNamePrefix"
 
           $ImageType = "${{ parameters.image_type }}"
-          Write-Host "##vso[task.setvariable variable=ImageType;]$ImageType"
+          Write-Host "##vso[task.setvariable variable=ImageType;isOutput=true]$ImageType"
           
           $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu/templates" } else { "windows/templates" }
           $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
@@ -240,7 +240,7 @@ stages:
   displayName:  'Create Gallery Image Version VM'
   condition: and(succeeded(), eq('${{ parameters.update_type }}', 'galleryvm'))
   dependsOn: 
-    - buildagent_template_vm
+    - buildagent_template_vm  
   jobs:
   - template: buildagent-generation-galleryvm.yml
     parameters: 
