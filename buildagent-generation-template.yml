@@ -154,7 +154,7 @@ stages:
       displayName: 'Build VM'
       inputs:
         targetType: filePath
-        filePath: ${{ parameters.repository_base_path }}/images.CI/linux-and-win/build-image.ps1
+        filePath: ${{ parameters.repository_base_path }}/runner-images/images.CI/linux-and-win/build-image.ps1
         arguments: -ClientId $(CLIENT_ID) `
                    -ClientSecret $(CLIENT_SECRET) `
                    -TemplatePath $(TemplatePath) `
@@ -197,7 +197,7 @@ stages:
       displayName: 'Print provisioners duration'
       inputs:
         targetType: 'filePath'
-        filePath: ${{ parameters.repository_base_path }}/images.CI/measure-provisioners-duration.ps1
+        filePath: ${{ parameters.repository_base_path }}/runner-images/images.CI/measure-provisioners-duration.ps1
         arguments: -PackerLogPath "$(Build.ArtifactStagingDirectory)/packer-log.txt" `
                    -PrefixToPathTrim "$(TemplateDirectoryPath)" `
                    -PrintTopNLongest 25
@@ -207,7 +207,7 @@ stages:
       condition: always()
       inputs:
         targetType: filePath
-        filePath: ./images.CI/linux-and-win/cleanup.ps1
+        filePath: ${{ parameters.repository_base_path }}/runner-images/images.CI/linux-and-win/cleanup.ps1
         arguments: -TempResourceGroupName "$(TempResourceGroupName)" `
                   -SubscriptionId $(AZURE_SUBSCRIPTION) `
                   -ClientId $(CLIENT_ID) `
