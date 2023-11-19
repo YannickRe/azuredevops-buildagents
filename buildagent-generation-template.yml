@@ -100,6 +100,8 @@ stages:
         targetType: 'inline'
         script: |
           $ResourcesNamePrefix = "$(Build.BuildId)"
+          Write-Host "##vso[task.setvariable variable=ResourcesNamePrefix;]$ResourcesNamePrefix"
+
           $ImageType = "${{ parameters.image_type }}"
           $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu/templates" } else { "windows/templates" }
           $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
