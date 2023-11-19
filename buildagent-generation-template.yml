@@ -181,7 +181,7 @@ stages:
           $rootDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu" } else { "windows" }
           $rootDirectoryPath = Join-Path (Join-Path "runner-images" "images") $rootDirectoryName | Resolve-Path
 
-          $readmePath = Join-Path $rootDirectoryPath "${{ parameters.image_readme_name }}"
+          $readmePath = Join-Path $rootDirectoryPath "$(image_readme_name)"
           $softwareReportPath = Join-Path $rootDirectoryPath "software-report.json"
 
           Copy-Item -Path $readmePath -Destination "$(Build.ArtifactStagingDirectory)/"
