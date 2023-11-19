@@ -103,6 +103,8 @@ stages:
           Write-Host "##vso[task.setvariable variable=ResourcesNamePrefix;]$ResourcesNamePrefix"
 
           $ImageType = "${{ parameters.image_type }}"
+          Write-Host "##vso[task.setvariable variable=ImageType;]$ImageType"
+          
           $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu/templates" } else { "windows/templates" }
           $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
 
