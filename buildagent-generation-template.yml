@@ -144,8 +144,8 @@ stages:
           Write-Host "##vso[task.setvariable variable=ManagedImageName;]$ManagedImageName"
 
           $TempResourceGroupName = "packer-temp-$ManagedImageName"
-          Write-Host "##vso[task.setvariable variable=TempResourceGroupName;]$TempResourceGroupNamame" 
-          
+          Write-Host "##vso[task.setvariable variable=TempResourceGroupName;]$TempResourceGroupName"  
+
     - task: PowerShell@2
       displayName: 'Workaround for issue: https://github.com/actions/runner-images/discussions/6251'
       inputs:
