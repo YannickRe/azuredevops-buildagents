@@ -154,9 +154,9 @@ stages:
           If ('$(setVars.OsType)' -eq 'Windows') {
             Write-Host 'Attempting to modify $(TemplatePath) with workaround'
             ((Get-Content -path "$(TemplatePath)" -Raw) -replace '"type": "azure-arm",','"type": "azure-arm","azure_tags": { "ExcludeMdeAutoProvisioning": "True" },') | Set-Content -Path "$(TemplatePath)"              
-            Write-Host "$(TemplatePath) modified"
+            Write-Host "##[section] Template $(TemplatePath) modified"
           } else {
-            Write-Host 'Patch not applied as $(TemplatePath) is not a Windows template'
+            Write-Host "##[section] Patch not applied as $(TemplatePath) is not a Windows template"
           }
 
     - task: PowerShell@2
