@@ -102,12 +102,12 @@ stages:
           $ResourcesNamePrefix = "$(Build.BuildId)"
           Write-Host "##vso[task.setvariable variable=ResourcesNamePrefix;isOutput=true]$ResourcesNamePrefix"
           
+          $ImageType = "${{ parameters.image_type }}"
+          Write-Host "##vso[task.setvariable variable=ImageType;isOutput=true]$ImageType"
+
           $OsType = if ($ImageType.StartsWith("ubuntu")) { "Linux" } else { "Windows" }
           Write-Host "##vso[task.setvariable variable=OsType;isOutput=true;]$OsType"
 
-          $ImageType = "${{ parameters.image_type }}"
-          Write-Host "##vso[task.setvariable variable=ImageType;isOutput=true]$ImageType"
-          
           $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu/templates" } else { "windows/templates" }
           $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
 
@@ -144,7 +144,7 @@ stages:
           Write-Host "##vso[task.setvariable variable=ManagedImageName;]$ManagedImageName"
 
           $TempResourceGroupName = "packer-temp-$ManagedImageName"
-          Write-Host "##vso[task.setvariable variable=TempResourceGroupName;]$TempResourceGroupName" 
+          Write-Host "##vso[task.setvariable variable=TempResourceGroupName;]$TempResourceGroupNamame" 
           
     - task: PowerShell@2
       displayName: 'Workaround for issue: https://github.com/actions/runner-images/discussions/6251'
