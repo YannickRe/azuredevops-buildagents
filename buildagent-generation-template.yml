@@ -113,7 +113,7 @@ stages:
 
                 if ("${{ parameters.image_type }}" -eq "ubuntu2004") {
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2004-Readme.md"
-                  $image_template_name = "ubuntu-20.04.json"
+                  $image_template_name = "ubuntu-20.04.pkr.hcl"
                 }
                 elseif ("${{ parameters.image_type }}" -eq "ubuntu2204") {
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2204-Readme.md"
@@ -121,11 +121,11 @@ stages:
                 }
                 elseif ("${{ parameters.image_type }}" -eq "windows2019") {
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2019-Readme.md"
-                  $image_template_name = "windows-2019.json"
+                  $image_template_name = "windows-2019.pkr.hcl"
                 }
                 elseif ("${{ parameters.image_type }}" -eq "windows2022") {
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2022-Readme.md"
-                  $image_template_name = "windows-2022.json"
+                  $image_template_name = "windows-2022.pkr.hcl"
                 }
 
                 $TemplateFileName = $image_template_name
