@@ -65,8 +65,8 @@ if ($gallery) {
                 # Remove all images except the most recent ones
                 $imagesToRemove = $sortedImages[0..($sortedImages.Count - $GalleryImagesToKeep - 1 )]
                 foreach ($imageToRemove in $imagesToRemove) {
-                    $JobList += Write-Host "##[section]Removing image version for image definition '$imageDefinition': $($imageToRemove.Name) with $($imageToRemove.PublishingProfile.PublishedDate)"
-                    Remove-AzGalleryImageVersion -ResourceGroupName $GalleryResourceGroup -GalleryName $gallery.Name -GalleryImageDefinitionName $imageDefinition -Name $imageToRemove.Name -Force -AsJob
+                    Write-Host "##[section]Removing image version for image definition '$imageDefinition': $($imageToRemove.Name) with $($imageToRemove.PublishingProfile.PublishedDate)"
+                    $JobList += Remove-AzGalleryImageVersion -ResourceGroupName $GalleryResourceGroup -GalleryName $gallery.Name -GalleryImageDefinitionName $imageDefinition -Name $imageToRemove.Name -Force -AsJob
                     $needToWait = $true
                 }
                 } else {
