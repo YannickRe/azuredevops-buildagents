@@ -1,8 +1,8 @@
 parameters:
-- name: variable_group
+- name: variable_group_name
   displayName: Variable Group
   type: string
-  default: BuildAgents
+  default: 'Image Generation Variables'
 - name: gallery_images_to_keep
   displayName: Number of image versions to keep in gallery
   type: number
@@ -22,7 +22,7 @@ jobs:
   pool: 
     name: ${{ parameters.agent_pool }}
   variables:
-  - group: ${{ parameters.variable_group }}
+  - group: ${{ parameters.variable_group_name }}
 
 
   steps:

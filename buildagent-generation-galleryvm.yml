@@ -1,8 +1,8 @@
 parameters:
-- name: variable_group
+- name: variable_group_name
   displayName: Variable Group
   type: string
-  default: BuildAgents
+  default: 'Image Generation Variables'
 - name: agent_pool
   displayName: Agent Pool
   type: string
@@ -21,11 +21,11 @@ jobs:
     name: ${{ parameters.agent_pool }}
     
   variables:
-  - name: ImageType
-    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ImageType'] ]
-  - name: ResourcesNamePrefix
-    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ResourcesNamePrefix'] ]
-  - group: ${{ parameters.variable_group }}
+  - name: GalleryVmImageDefinition
+    value: $[stageDependencies.buildagent_template_vm.generate_image.outputs['setVars.GalleryVmImageDefinition'] ]
+  - name: ManagedImageName
+    value: $[stageDependencies.buildagent_template_vm.generate_image.outputs['setVars.ManagedImageNameOutput'] ]
+  - group: ${{ parameters.variable_group_name }}
 
   steps:
   - checkout: self
@@ -37,7 +37,8 @@ jobs:
     inputs:
       targetType: filePath
       filePath: ${{ parameters.repository_base_path }}/scripts/create-gallery-vmimageversion.ps1
-      arguments: -ResourcesNamePrefix $(ResourcesNamePrefix) `
+      arguments: -ManagedImageName $(ManagedImageName) `
+                 -BuildId $(Build.BuildId) `
                  -ClientId $(CLIENT_ID) `
                  -ClientSecret $(CLIENT_SECRET) `
                  -ResourceGroup $(AZURE_RESOURCE_GROUP) `
@@ -46,4 +47,4 @@ jobs:
                  -Location $(AZURE_LOCATION) `
                  -GalleryName $(GALLERY_NAME) `
                  -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
-                 -ImageType $(ImageType) 
+                 -GalleryVmImageDefinition $(GalleryVmImageDefinition) 

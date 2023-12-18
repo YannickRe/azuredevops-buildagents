@@ -1,8 +1,8 @@
 parameters:
-- name: variable_group
+- name: variable_group_name
   displayName: Variable Group
   type: string
-  default: BuildAgents
+  default: 'Image Generation Variables'
 - name: delete_type
   displayName: 'Delete vmss (VM Scale Set) or galleryvm (Gallery VM) image?'
   type: string
@@ -25,12 +25,12 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-- group: ${{ parameters.variable_group }}
+- group: ${{ parameters.variable_group_name }}
 
 stages:
 - template: managedimage-cleanup-template.yml
   parameters:
-    variable_group: ${{ parameters.variable_group }}
+    variable_group_name: ${{ parameters.variable_group_name }}
     delete_type: ${{ parameters.delete_type }}
     gallery_images_to_keep: 3
     agent_pool: 'Azure Pipelines'

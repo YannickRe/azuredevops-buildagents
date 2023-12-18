@@ -1,8 +1,8 @@
 parameters:
-- name: variable_group
+- name: variable_group_name
   displayName: Variable Group
   type: string
-  default: BuildAgents
+  default: 'Image Generation Variables'
 - name: agent_pool
   displayName: Agent Pool
   type: string
@@ -24,14 +24,12 @@ jobs:
     name: ${{ parameters.agent_pool }}
 
   variables:
-  - name: ImageType
-    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ImageType'] ]
-  - name: ResourcesNamePrefix
-    value: $[stageDependencies.buildagent_template_vm.imagegeneration.outputs['setVars.ResourcesNamePrefix'] ]
-  - group: ${{ parameters.variable_group }}
+  - name: ManagedImageName
+    value: $[stageDependencies.buildagent_template_vm.generate_image.outputs['setVars.ManagedImageNameOutput'] ]
+  - group: ${{ parameters.variable_group_name }}
   - name: VmssNames
     value: ${{ parameters.vmss_names }}
-  - group: ${{ parameters.variable_group }}
+  - group: ${{ parameters.variable_group_name }}
 
   steps:
   - checkout: self
@@ -48,6 +46,5 @@ jobs:
                  -AgentsResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
-                 -ResourcesNamePrefix $(ResourcesNamePrefix) `
-                 -ImageType $(ImageType) `
+                 -ManagedImageName $(ManagedImageName) `
                  -VmssNames $(VmssNames)
