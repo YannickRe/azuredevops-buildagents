@@ -38,6 +38,9 @@ $SensitiveData = @(
 Write-Host "Show Packer Version"
 packer --version
 
+Write-Host "Download packer plugins"
+packer init $TemplatePath
+
 Write-Host "Build $Image VM"
 packer build    -var "client_id=$ClientId" `
                 -var "client_secret=$ClientSecret" `
