@@ -8,6 +8,15 @@ parameters:
       - windows2022
       - ubuntu2004
       - ubuntu2204
+  - name: agent_pool
+    displayName: Agent Pool
+    type: object
+    default:
+      name: 'ci-agent-pool'
+  - name: variable_group_name
+    displayName: Variable Group
+    type: string
+    default: 'Image Generation Variables'
   - name: runner_images_version
     displayName: Runner-Images Version
     type: string
@@ -16,24 +25,16 @@ parameters:
       - alpha
       - prerelease
       - release
-  - name: variable_group
-    displayName: Variable Group
-    type: string
-    default: BuildAgents
-  - name: agent_pool
-    displayName: Agent Pool
-    type: string
-    default: CI Windows2019
   - name: depends_on
     displayName: First Job Depends On
     type: object
-    default: " "
+    default: ' '
   - name: repository_base_path
     displayName: Scripts Path
     type: string
     default: .
   - name: update_type
-    displayName: "Update vmss (VM Scale Set) or galleryvm (Gallery VM Image) ?"
+    displayName: 'Update vmss (VM Scale Set) or galleryvm (Gallery VM Image) ?'
     type: string
     default: galleryvm
     values:
@@ -42,27 +43,29 @@ parameters:
 
 stages:
   - stage: buildagent_template_vm
-    displayName: "Build Agent Template VM"
+    displayName: 'Build Agent Template VM'
     jobs:
-      - job: imagegeneration
+      - job: generate_image
         displayName: Image Generation (${{ parameters.image_type }})
         ${{ if ne(parameters.depends_on, ' ') }}:
           dependsOn: ${{ parameters.depends_on }}
-        timeoutInMinutes: "600"
-        cancelTimeoutInMinutes: "30"
+        timeoutInMinutes: '600'
+        cancelTimeoutInMinutes: '30'
         variables:
-          - group: ${{ parameters.variable_group }}
+          - group: ${{ parameters.variable_group_name }}
         pool:
           name: ${{ parameters.agent_pool }}
 
         steps:
           - checkout: self
+          
           - ${{ if ne(parameters.repository_base_path, '.') }}:
               - checkout: ${{ parameters.repository_base_path }}
+          
           - task: PowerShell@2
-            displayName: "Checkout the GitHub repository"
+            displayName: 'Checkout the GitHub repository'
             inputs:
-              targetType: inline
+              targetType: 'inline'
               script: |
                 $GitHubOwner = 'actions'
                 $RepoName = 'runner-images'
@@ -92,25 +95,13 @@ stages:
                   cd runner-images
                   git checkout ($latest_release.tag_name)
                 }
-
+          
           - task: PowerShell@2
             name: setVars
-            displayName: "Set image template variables"
+            displayName: 'Set image template variables'
             inputs:
-              targetType: "inline"
+              targetType: 'inline'
               script: |
-                $ResourcesNamePrefix = "$(Build.BuildId)"
-                Write-Host "##vso[task.setvariable variable=ResourcesNamePrefix;isOutput=true]$ResourcesNamePrefix"
-
-                $ImageType = "${{ parameters.image_type }}"
-                Write-Host "##vso[task.setvariable variable=ImageType;isOutput=true]$ImageType"
-
-                $OsType = if ($ImageType.StartsWith("ubuntu")) { "Linux" } else { "Windows" }
-                Write-Host "##vso[task.setvariable variable=OsType;isOutput=true;]$OsType"
-
-                $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu/templates" } else { "windows/templates" }
-                $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
-
                 if ("${{ parameters.image_type }}" -eq "ubuntu2004") {
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2004-Readme.md"
                   $image_template_name = "ubuntu-20.04.pkr.hcl"
@@ -127,6 +118,10 @@ stages:
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2022-Readme.md"
                   $image_template_name = "windows-2022.pkr.hcl"
                 }
+
+                $ImageType = "${{ parameters.image_type }}"
+                $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu/templates" } else { "windows/templates" }
+                $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
 
                 $TemplateFileName = $image_template_name
                 if ($TemplateFileName) {
@@ -146,12 +141,18 @@ stages:
                 $TempResourceGroupName = "packer-temp-$ManagedImageName"
                 Write-Host "##vso[task.setvariable variable=TempResourceGroupName;]$TempResourceGroupName"
 
+                $GalleryVmImageDefinition = "$ImageType-agentpool-full"
+                Write-Host "##vso[task.setvariable variable=GalleryVmImageDefinition;isOutput=true]$GalleryVmImageDefinition"
+                Write-Host "##vso[task.setvariable variable=ManagedImageNameOutput;isOutput=true]$ManagedImageName"
+                
           - task: PowerShell@2
-            displayName: "Workaround for issue: https://github.com/actions/runner-images/discussions/6251"
+            displayName: 'Workaround for issue: https://github.com/actions/runner-images/discussions/6251'
             inputs:
-              targetType: "inline"
+              targetType: 'inline'
               script: |
-                If ('$(setVars.OsType)' -eq 'Windows') {
+                $ImageType = "${{ parameters.image_type }}"
+                $OsType = if ($ImageType.StartsWith("ubuntu")) { "Linux" } else { "Windows" }
+                If ($OsType -eq 'Windows') {
                   Write-Host 'Attempting to modify $(TemplatePath) with workaround'
                   ((Get-Content -path "$(TemplatePath)" -Raw) -replace '"type": "azure-arm",','"type": "azure-arm","azure_tags": { "ExcludeMdeAutoProvisioning": "True" },') | Set-Content -Path "$(TemplatePath)"              
                   Write-Host "##[section] Template $(TemplatePath) modified"
@@ -179,12 +180,12 @@ stages:
                 -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME)
             env:
               PACKER_LOG: 1
-              PACKER_LOG_PATH: $(Build.ArtifactStagingDirectory)/packer-log.txt
+              PACKER_LOG_PATH: "$(Agent.TempDirectory)/packer-log.txt"
 
           - task: PowerShell@2
-            displayName: "Copy image artifacts to the separate directory"
+            displayName: 'Copy image artifacts to the separate directory'
             inputs:
-              targetType: "inline"
+              targetType: 'inline'
               script: |
                 $ImageType = "${{ parameters.image_type }}"
                 $rootDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu" } else { "windows" }
@@ -199,16 +200,16 @@ stages:
                 }
 
           - task: PowerShell@2
-            displayName: "Print markdown software report"
+            displayName: 'Print markdown software report'
             inputs:
-              targetType: "inline"
+              targetType: 'inline'
               script: |
                 Get-Content -Path "$(Build.ArtifactStagingDirectory)/$(image_readme_name)"
 
           - task: PowerShell@2
-            displayName: "Print json software report"
+            displayName: 'Print json software report'
             inputs:
-              targetType: "inline"
+              targetType: 'inline'
               script: |
                 $softwareReportPath = "$(Build.ArtifactStagingDirectory)/software-report.json"
                 if (Test-Path $softwareReportPath) {
@@ -217,16 +218,16 @@ stages:
 
           - task: PublishBuildArtifacts@1
             inputs:
-              ArtifactName: "Built_VM_Artifacts"
+              ArtifactName: 'Built_VM_Artifacts'
             displayName: Publish Artifacts
 
           - task: PowerShell@2
-            displayName: "Print provisioners duration"
+            displayName: 'Print provisioners duration'
             inputs:
-              targetType: "filePath"
+              targetType: 'filePath'
               filePath: ./runner-images/images.CI/measure-provisioners-duration.ps1
               arguments:
-                -PackerLogPath "$(Build.ArtifactStagingDirectory)/packer-log.txt" `
+                -PackerLogPath "$(Agent.TempDirectory)/packer-log.txt" `
                 -PrefixToPathTrim "$(TemplateDirectoryPath)" `
                 -PrintTopNLongest 25
 
@@ -243,22 +244,21 @@ stages:
                 -TenantId $(AZURE_TENANT)
 
   - stage: create_gallery_imagevm
-    displayName: "Create Gallery Image Version VM"
+    displayName: 'Create Gallery Image Version VM'
     condition: and(succeeded(), eq('${{ parameters.update_type }}', 'galleryvm'))
     dependsOn:
       - buildagent_template_vm
     jobs:
       - template: buildagent-generation-galleryvm.yml
         parameters:
-          variable_group: ${{ parameters.variable_group }}
+          variable_group_name: ${{ parameters.variable_group_name }}
           agent_pool: ${{ parameters.agent_pool }}
           repository_base_path: ${{ parameters.repository_base_path }}
 
   - stage: update_vmss_imagevm
-    displayName: "Update VM Scale Set to new Image"
+    displayName: 'Update VM Scale Set to new Image'
     dependsOn:
       - buildagent_template_vm
-      # - convert_template_to_managedvm
     condition: and(succeeded(), eq('${{ parameters.update_type }}', 'vmss'))
     variables:
       - ${{ if eq(parameters.image_type, 'windows2019') }}:
@@ -276,7 +276,7 @@ stages:
     jobs:
       - template: buildagent-generation-update-vmss.yml
         parameters:
-          variable_group: ${{ parameters.variable_group }}
+          variable_group_name: ${{ parameters.variable_group_name }}
           agent_pool: ${{ parameters.agent_pool }}
           repository_base_path: ${{ parameters.repository_base_path }}
           vmss_names: $(VmssNames)
