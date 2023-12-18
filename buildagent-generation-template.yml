@@ -170,7 +170,6 @@ stages:
                 -TemplatePath $(TemplatePath) `
                 -ImageName "$(ManagedImageName)" `
                 -ResourceGroup $(AZURE_RESOURCE_GROUP) `
-                -ResourcesNamePrefix $(ResourcesNamePrefix) `
                 -TempResourceGroupName "$(TempResourceGroupName)" `
                 -SubscriptionId $(AZURE_SUBSCRIPTION) `
                 -TenantId $(AZURE_TENANT) `
