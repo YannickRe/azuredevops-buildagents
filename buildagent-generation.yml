@@ -16,10 +16,10 @@ parameters:
   - alpha
   - prerelease
   - release
-- name: variable_group
+- name: variable_group_name
   displayName: Variable Group
   type: string
-  default: BuildAgents
+  default: 'Image Generation Variables'
 - name: agent_pool
   displayName: Agent Pool
   type: string
@@ -39,6 +39,6 @@ stages:
   parameters: 
     image_type: ${{ parameters.image_type }}
     runner_images_version: ${{ parameters.runner_images_version }}
-    variable_group: ${{ parameters.variable_group }}
+    variable_group_name: ${{ parameters.variable_group_name }}
     agent_pool: ${{ parameters.agent_pool }}
     update_type: ${{ parameters.update_type }}

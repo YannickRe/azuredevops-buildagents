@@ -38,7 +38,8 @@ catch  {
 
 }
 
-
+$needToWait = $false
+$JobList = @()
 if ($gallery) {
     # Loop through the image definitions
     foreach ($imageDefinition in $imageDefinitions) {
@@ -65,7 +66,8 @@ if ($gallery) {
                 $imagesToRemove = $sortedImages[0..($sortedImages.Count - $GalleryImagesToKeep - 1 )]
                 foreach ($imageToRemove in $imagesToRemove) {
                     Write-Host "##[section]Removing image version for image definition '$imageDefinition': $($imageToRemove.Name) with $($imageToRemove.PublishingProfile.PublishedDate)"
-                    Remove-AzGalleryImageVersion -ResourceGroupName $GalleryResourceGroup -GalleryName $gallery.Name -GalleryImageDefinitionName $imageDefinition -Name $imageToRemove.Name -Force -AsJob
+                    $JobList += Remove-AzGalleryImageVersion -ResourceGroupName $GalleryResourceGroup -GalleryName $gallery.Name -GalleryImageDefinitionName $imageDefinition -Name $imageToRemove.Name -Force -AsJob
+                    $needToWait = $true
                 }
                 } else {
                 Write-Host "##[section]The number of images for image definition '$imageDefinition' has no more than $GalleryImagesToKeep images. No images will be removed."
@@ -74,6 +76,11 @@ if ($gallery) {
    }
 } 
 
-# Timeout of 10 minutes
-Write-Host "##[section]Timeout: 10 minutes. Required to keep connection open to finalize the image removal jobs."
-Start-Sleep -Seconds 600
+if ($needToWait) {
+    Write-Host "##[section]Waiting for the image removal jobs to finish."
+    $JobList | Get-Job | Wait-Job | Receive-Job | Format-Table -AutoSize
+    $JobList
+}
+else {
+    Write-Host "##[section]No image removal jobs were started."
+}

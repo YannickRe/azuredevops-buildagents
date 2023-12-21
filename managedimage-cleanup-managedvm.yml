@@ -1,8 +1,8 @@
 parameters:
-- name: variable_group
+- name: variable_group_name
   displayName: Variable Group
   type: string
-  default: BuildAgents
+  default: 'Image Generation Variables'
 - name: agent_pool
   displayName: Agent Pool
   type: string
@@ -18,7 +18,7 @@ jobs:
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 30
   variables:
-  - group: ${{ parameters.variable_group }}
+  - group: ${{ parameters.variable_group_name }}
 
   steps:
   - checkout: self

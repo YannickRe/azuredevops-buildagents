@@ -5,15 +5,14 @@ param(
     [String] [Parameter (Mandatory=$true)] $SubscriptionId,
     [String] [Parameter (Mandatory=$true)] $ResourceGroup,
     [String] [Parameter (Mandatory=$true)] $AgentsResourceGroup,
-    [String] [Parameter (Mandatory=$true)] $ResourcesNamePrefix,
-    [String] [Parameter (Mandatory=$true)] $ImageType,
+    [String] [Parameter (Mandatory=$true)] $ManagedImageName,
     [String] [Parameter (Mandatory=$true)] $VmssNames
 )
 
 az login --service-principal --username $ClientId --password $ClientSecret --tenant $TenantId | Out-Null
 az account set -s $SubscriptionId
 
-$imageName = "$ImageType-$ResourcesNamePrefix"
+$imageName = $ManagedImageName
 $managedImageId=$(az image list --resource-group $ResourceGroup --query "[?name=='$imageName'].id" --output tsv)
 Write-Host "Retrieve generated managedImageId: $managedImageId"
 
