@@ -2,7 +2,7 @@ parameters:
 - name: variable_group_name
   displayName: Variable Group
   type: string
-  default: 'Image Generation Variables'
+  default: 'BuildAgents'
 - name: gallery_images_to_keep
   displayName: Number of image versions to keep in gallery
   type: number
