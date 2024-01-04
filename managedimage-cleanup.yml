@@ -2,7 +2,7 @@ parameters:
 - name: variable_group_name
   displayName: Variable Group
   type: string
-  default: 'Image Generation Variables'
+  default: 'BuildAgents'
 - name: delete_type
   displayName: 'Delete vmss (VM Scale Set) or galleryvm (Gallery VM) image?'
   type: string
@@ -22,7 +22,7 @@ schedules:
 trigger: none
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'Hostpool - Image'
 
 variables:
 - group: ${{ parameters.variable_group_name }}
