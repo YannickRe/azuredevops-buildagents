@@ -19,7 +19,7 @@ parameters:
 - name: variable_group_name
   displayName: Variable Group
   type: string
-  default: 'Image Generation Variables'
+  default: 'BuildAgents'
 - name: agent_pool
   displayName: Agent Pool
   type: string
