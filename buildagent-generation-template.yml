@@ -153,33 +153,9 @@ stages:
                 $ImageType = "${{ parameters.image_type }}"
                 $OsType = if ($ImageType.StartsWith("ubuntu")) { "Linux" } else { "Windows" }
                 If ($OsType -eq 'Windows') {
-                    # Add your code here
-
                   Write-Host 'Attempting to modify $(TemplatePath) with workaround'
-                  # Read the file content
-                  $content = Get-Content "$(TemplatePath)" -Raw
-                  # Define the pattern to search for
-                  $pattern = @"
-                  variable "azure_tags" {
-                    type    = map(string)
-                    default = {}
-                  }
-                "@
-
-                  # Define the replacement pattern
-                  $replacement = @"
-                  variable "azure_tags" {
-                    type    = map(string)
-                    default = {"ExcludeMdeAutoProvisioning": "True"}
-                }
-                "@
-
-                  # Perform the replacement
-                  $newContent = $content -replace [regex]::Escape($pattern), $replacement
-
-                  # Write the updated content back to the file
-                  $newContent | Set-Content $(TemplatePath)
-                  
+                  ((Get-Content -path "$(TemplatePath)" -Raw) -replace 'name  = azure_tag.key','name =  ExcludeMdeAutoProvisioning) | Set-Content -Path "$(TemplatePath)"
+                  ((Get-Content -path "$(TemplatePath)" -Raw) -replace 'value  = azure_tag.value','value = true') | Set-Content -Path "$(TemplatePath)"              
                   Write-Host "##[section] Template $(TemplatePath) modified"
                 } else {
                   Write-Host "##[section] Patch not applied as $(TemplatePath) is not a Windows template"
