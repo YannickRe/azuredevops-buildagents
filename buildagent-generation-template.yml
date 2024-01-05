@@ -154,7 +154,7 @@ stages:
                 $OsType = if ($ImageType.StartsWith("ubuntu")) { "Linux" } else { "Windows" }
                 If ($OsType -eq 'Windows') {
                   Write-Host 'Attempting to modify $(TemplatePath) with workaround'
-                  ((Get-Content -path "$(TemplatePath)" -Raw) -replace '"type": "azure-arm",','"type": "azure-arm","azure_tags": { "ExcludeMdeAutoProvisioning": "True" },') | Set-Content -Path "$(TemplatePath)"              
+                  ((Get-Content -path "$(TemplatePath)" -Raw) -replace 'default = {}','default = {"ExcludeMdeAutoProvisioning": "True"}') | Set-Content -Path "$(TemplatePath)"
                   Write-Host "##[section] Template $(TemplatePath) modified"
                 } else {
                   Write-Host "##[section] Patch not applied as $(TemplatePath) is not a Windows template"
