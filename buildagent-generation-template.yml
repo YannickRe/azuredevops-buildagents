@@ -26,7 +26,7 @@ parameters:
       - prerelease
       - release
   - name: depends_on
-    displayName: First Job Depends On
+    displayName: First Stage Depends On
     type: object
     default: ' '
   - name: repository_base_path
@@ -44,11 +44,11 @@ parameters:
 stages:
   - stage: buildagent_template_vm
     displayName: 'Build Agent Template VM'
+    ${{ if ne(parameters.depends_on, ' ') }}:
+      dependsOn: ${{ parameters.depends_on }}
     jobs:
       - job: generate_image
         displayName: Image Generation (${{ parameters.image_type }})
-        ${{ if ne(parameters.depends_on, ' ') }}:
-          dependsOn: ${{ parameters.depends_on }}
         timeoutInMinutes: '600'
         cancelTimeoutInMinutes: '30'
         variables:
