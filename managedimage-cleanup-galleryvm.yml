@@ -38,7 +38,6 @@ jobs:
                  -ClientSecret $(CLIENT_SECRET) `
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
-                 -ResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
                  -GalleryName $(GALLERY_NAME) `
                  -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
                  -GalleryImagesToKeep ${{ parameters.gallery_images_to_keep }}
