@@ -3,7 +3,6 @@ param(
     [String] [Parameter (Mandatory=$true)] $ClientSecret,
     [String] [Parameter (Mandatory=$true)] $SubscriptionId,
     [String] [Parameter (Mandatory=$true)] $TenantId,
-    [String] [Parameter (Mandatory=$true)] $ResourceGroup,
     [String] [Parameter (Mandatory=$true)] $GalleryName,
     [String] [Parameter (Mandatory=$true)] $GalleryResourceGroup,
     [int] [Parameter (Mandatory=$true)] $GalleryImagesToKeep 
