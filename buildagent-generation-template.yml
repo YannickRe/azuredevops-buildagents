@@ -42,7 +42,7 @@ parameters:
       - vmss
 
 stages:
-  - stage: buildagent_template_vm
+  - stage: buildagent_template_vm_${{ parameters.image_type }}
     displayName: 'Build Agent Template VM'
     ${{ if ne(parameters.depends_on, ' ') }}:
       dependsOn: ${{ parameters.depends_on }}
@@ -243,11 +243,11 @@ stages:
                 -ClientSecret $(CLIENT_SECRET) `
                 -TenantId $(AZURE_TENANT)
 
-  - stage: create_gallery_imagevm
+  - stage: create_gallery_imagevm_${{ parameters.image_type }}
     displayName: 'Create Gallery Image Version VM'
     condition: and(succeeded(), eq('${{ parameters.update_type }}', 'galleryvm'))
     dependsOn:
-      - buildagent_template_vm
+      - buildagent_template_vm_${{ parameters.image_type }}
     jobs:
       - template: buildagent-generation-galleryvm.yml
         parameters:
@@ -255,10 +255,10 @@ stages:
           agent_pool: ${{ parameters.agent_pool }}
           repository_base_path: ${{ parameters.repository_base_path }}
 
-  - stage: update_vmss_imagevm
+  - stage: update_vmss_imagevm_${{ parameters.image_type }}
     displayName: 'Update VM Scale Set to new Image'
     dependsOn:
-      - buildagent_template_vm
+      - buildagent_template_vm_${{ parameters.image_type }}
     condition: and(succeeded(), eq('${{ parameters.update_type }}', 'vmss'))
     variables:
       - ${{ if eq(parameters.image_type, 'windows2019') }}:
