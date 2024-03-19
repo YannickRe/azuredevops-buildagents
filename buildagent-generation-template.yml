@@ -254,6 +254,7 @@ stages:
           variable_group_name: ${{ parameters.variable_group_name }}
           agent_pool: ${{ parameters.agent_pool }}
           repository_base_path: ${{ parameters.repository_base_path }}
+          build_stage_job_name: buildagent_template_vm_${{ parameters.image_type }}.generate_image
 
   - stage: update_vmss_imagevm_${{ parameters.image_type }}
     displayName: 'Update VM Scale Set to new Image'
@@ -280,3 +281,5 @@ stages:
           agent_pool: ${{ parameters.agent_pool }}
           repository_base_path: ${{ parameters.repository_base_path }}
           vmss_names: $(VmssNames)
+          build_stage_job_name: buildagent_template_vm_${{ parameters.image_type }}.generate_image
+
