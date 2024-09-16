@@ -51,4 +51,5 @@ jobs:
                  -Location $(AZURE_LOCATION) `
                  -GalleryName $(GALLERY_NAME) `
                  -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
+                 -GalleryStorageAccountType $(GALLERY_STORAGE_ACCOUNT_TYPE) `
                  -GalleryVmImageDefinition $(GalleryVmImageDefinition) 
