@@ -9,6 +9,7 @@ param(
     [String] [Parameter (Mandatory=$true)] $ResourceGroup,
     [String] [Parameter (Mandatory=$true)] $GalleryName,
     [String] [Parameter (Mandatory=$true)] $GalleryResourceGroup,
+    [String] [Parameter (Mandatory=$true)] $GalleryStorageAccountType,
     [String] [Parameter (Mandatory=$true)] $GalleryVmImageDefinition
 )
 
