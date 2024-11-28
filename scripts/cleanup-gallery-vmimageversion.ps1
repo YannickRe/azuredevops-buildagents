@@ -12,6 +12,7 @@ param(
 $imageDefinitions = @(
     "ubuntu2004-agentpool-full",
     "ubuntu2204-agentpool-full",
+    "ubuntu2404-agentpool-full",
     "windows2019-agentpool-full",
     "windows2022-agentpool-full"
 )

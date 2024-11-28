@@ -38,4 +38,5 @@ jobs:
                         -VmssNameWindows2022 $(VMSS_Windows2022) `
                         -VmssNameUbuntu $(VMSS_Ubuntu2004) `
                         -VmssNameUbuntu2204 $(VMSS_Ubuntu2204) `
+                        -VmssNameUbuntu2404 $(VMSS_Ubuntu2404) `
                         -TenantId $(AZURE_TENANT)

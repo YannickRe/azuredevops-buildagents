@@ -8,6 +8,7 @@ parameters:
       - windows2022
       - ubuntu2004
       - ubuntu2204
+      - ubuntu2404
   - name: agent_pool
     displayName: Agent Pool
     type: object
@@ -84,6 +85,7 @@ stages:
                     'windows2022' { $OSTagPrefix = 'win22' }
                     'ubuntu2004' { $OSTagPrefix = 'ubuntu20' }
                     'ubuntu2204' { $OSTagPrefix = 'ubuntu22' }
+                    'ubuntu2404' { $OSTagPrefix = 'ubuntu24' }
                   }
                   Write-Output "OSTagPrefix = $OSTagPrefix"
 
@@ -110,6 +112,10 @@ stages:
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2204-Readme.md"
                   $image_template_name = "ubuntu-22.04.pkr.hcl"
                 }
+                elseif ("${{ parameters.image_type }}" -eq "ubuntu2404") {
+                  Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2404-Readme.md"
+                  $image_template_name = "ubuntu-24.04.pkr.hcl"
+                }                
                 elseif ("${{ parameters.image_type }}" -eq "windows2019") {
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2019-Readme.md"
                   $image_template_name = "windows-2019.pkr.hcl"
@@ -274,6 +280,9 @@ stages:
       - ${{ if eq(parameters.image_type, 'ubuntu2204') }}:
           - name: VmssNames
             value: $[variables.VMSS_Ubuntu2204]
+      - ${{ if eq(parameters.image_type, 'ubuntu2404') }}:
+          - name: VmssNames
+            value: $[variables.VMSS_Ubuntu2404]            
     jobs:
       - template: buildagent-generation-update-vmss.yml
         parameters:
