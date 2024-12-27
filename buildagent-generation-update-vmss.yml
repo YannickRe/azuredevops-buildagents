@@ -14,6 +14,10 @@ parameters:
 - name: vmss_names
   displayName: VmssNames
   type: string
+- name: build_stage_job_name
+  displayName: Name of the stage and job that builds the image
+  type: string
+  default: buildagent_template_vm
   
 jobs:
 - job: updatevmss
@@ -25,7 +29,7 @@ jobs:
 
   variables:
   - name: ManagedImageName
-    value: $[stageDependencies.buildagent_template_vm.generate_image.outputs['setVars.ManagedImageNameOutput'] ]
+    value: $[stageDependencies.${{ parameters.build_stage_job_name }}.generate_image.outputs['setVars.ManagedImageNameOutput'] ]
   - group: ${{ parameters.variable_group_name }}
   - name: VmssNames
     value: ${{ parameters.vmss_names }}

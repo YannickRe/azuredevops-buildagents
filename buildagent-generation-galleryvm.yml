@@ -11,22 +11,26 @@ parameters:
   displayName: Scripts Path
   type: string
   default: .
+- name: build_stage_job_name
+  displayName: Name of the stage and job that builds the image
+  type: string
+  default: buildagent_template_vm
 
 jobs:
 - job: createvmimageversion
   displayName: Create New Gallery VMImage Version
   timeoutInMinutes: 600
   cancelTimeoutInMinutes: 90
-  pool: 
+  pool:
     name: ${{ parameters.agent_pool }}
     
   variables:
   - name: GalleryVmImageDefinition
-    value: $[stageDependencies.buildagent_template_vm.generate_image.outputs['setVars.GalleryVmImageDefinition'] ]
+    value: $[stageDependencies.${{parameters.build_stage_job_name}}.generate_image.outputs['setVars.GalleryVmImageDefinition'] ]
   - name: ManagedImageName
-    value: $[stageDependencies.buildagent_template_vm.generate_image.outputs['setVars.ManagedImageNameOutput'] ]
+    value: $[stageDependencies.${{parameters.build_stage_job_name}}.generate_image.outputs['setVars.ManagedImageNameOutput'] ]
   - name: GalleryStorageAccountType
-    value: $[stageDependencies.buildagent_template_vm.generate_image.outputs['setVars.GalleryStorageAccountType'] ]
+    value: $[stageDependencies.${{parameters.build_stage_job_name}}.generate_image.outputs['setVars.GalleryStorageAccountType'] ]
   - group: ${{ parameters.variable_group_name }}
 
   steps:
