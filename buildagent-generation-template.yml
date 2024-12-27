@@ -150,6 +150,14 @@ stages:
                 $GalleryVmImageDefinition = "$ImageType-agentpool-full"
                 Write-Host "##vso[task.setvariable variable=GalleryVmImageDefinition;isOutput=true]$GalleryVmImageDefinition"
                 Write-Host "##vso[task.setvariable variable=ManagedImageNameOutput;isOutput=true]$ManagedImageName"
+
+                $StorageAccountType = $(GALLERY_STORAGE_ACCOUNT_TYPE)
+                if ($StorageAccountType) {
+                  $StorageAccountType = $StorageAccountType
+                } else {
+                  $StorageAccountType = "Standard_LRS"
+                }
+                Write-Host "##vso[task.setvariable variable=GalleryStorageAccountType;isOutput=true]$StorageAccountType"
                 
           - task: PowerShell@2
             displayName: 'Workaround for issue: https://github.com/actions/runner-images/discussions/6251'
