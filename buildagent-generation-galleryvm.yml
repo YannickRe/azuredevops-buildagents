@@ -25,6 +25,8 @@ jobs:
     value: $[stageDependencies.buildagent_template_vm.generate_image.outputs['setVars.GalleryVmImageDefinition'] ]
   - name: ManagedImageName
     value: $[stageDependencies.buildagent_template_vm.generate_image.outputs['setVars.ManagedImageNameOutput'] ]
+  - name: GalleryStorageAccountType
+    value: $[stageDependencies.buildagent_template_vm.generate_image.outputs['setVars.GalleryStorageAccountType'] ]
   - group: ${{ parameters.variable_group_name }}
 
   steps:
@@ -47,4 +49,5 @@ jobs:
                  -Location $(AZURE_LOCATION) `
                  -GalleryName $(GALLERY_NAME) `
                  -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
+                 -GalleryStorageAccountType $(GalleryStorageAccountType) `
                  -GalleryVmImageDefinition $(GalleryVmImageDefinition) 

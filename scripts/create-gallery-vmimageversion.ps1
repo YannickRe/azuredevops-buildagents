@@ -9,6 +9,7 @@ param(
     [String] [Parameter (Mandatory=$true)] $ResourceGroup,
     [String] [Parameter (Mandatory=$true)] $GalleryName,
     [String] [Parameter (Mandatory=$true)] $GalleryResourceGroup,
+    [String] [Parameter (Mandatory=$true)] $GalleryStorageAccountType,
     [String] [Parameter (Mandatory=$true)] $GalleryVmImageDefinition
 )
 
@@ -22,7 +23,7 @@ Write-Host "Retrieve generated managedImageId: $managedImageId"
 $date = Get-Date
 $GalleryImageVersion = "$($date.ToString("yyyyMMdd")).$BuildId.0"
 
-$VmImageVersion = az sig image-version create -g $GalleryResourceGroup  --gallery-name $GalleryName --gallery-image-definition $GalleryVmImageDefinition --gallery-image-version $GalleryImageVersion --managed-image $ManagedImageId --target-regions $Location
+$VmImageVersion = az sig image-version create -g $GalleryResourceGroup  --gallery-name $GalleryName --gallery-image-definition $GalleryVmImageDefinition --gallery-image-version $GalleryImageVersion --managed-image $ManagedImageId --storage-account-type $GalleryStorageAccountType --target-regions $Location
 Write-Host "##vso[task.setvariable variable=VmImageVersion;]$VmImageVersion"
 
 Write-Host "Update Gallery Image: $GalleryVmImageDefinition"
