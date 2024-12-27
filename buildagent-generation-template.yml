@@ -151,11 +151,10 @@ stages:
                 Write-Host "##vso[task.setvariable variable=GalleryVmImageDefinition;isOutput=true]$GalleryVmImageDefinition"
                 Write-Host "##vso[task.setvariable variable=ManagedImageNameOutput;isOutput=true]$ManagedImageName"
 
-                $StorageAccountType = $(GALLERY_STORAGE_ACCOUNT_TYPE)
-                if ($StorageAccountType) {
-                  $StorageAccountType = $StorageAccountType
-                } else {
-                  $StorageAccountType = "Standard_LRS"
+                $StorageAccountType = "Standard_LRS"
+                try {
+                  $StorageAccountType = "$(GALLERY_STORAGE_ACCOUNT_TYPE)"
+                } catch {
                 }
                 Write-Host "##vso[task.setvariable variable=GalleryStorageAccountType;isOutput=true]$StorageAccountType"
                 
