@@ -8,6 +8,7 @@ parameters:
   - windows2022
   - ubuntu2004
   - ubuntu2204
+  - ubuntu2404
 - name: runner_images_version
   displayName: runner-images Version
   type: string
