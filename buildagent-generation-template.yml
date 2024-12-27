@@ -21,7 +21,7 @@ parameters:
   - name: runner_images_version
     displayName: Runner-Images Version
     type: string
-    default: release
+    default: alpha
     values:
       - alpha
       - prerelease
