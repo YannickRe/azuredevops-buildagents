@@ -48,6 +48,6 @@ jobs:
                  -AgentsResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
-                 -ResourcesNamePrefix $(ResourcesNamePrefix)
-                 -ImageType $(ImageType)
-                 -VmssNames $(VmssNames) `
+                 -ResourcesNamePrefix $(ResourcesNamePrefix) `
+                 -ImageType $(ImageType) `
+                 -VmssNames $(VmssNames)
