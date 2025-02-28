@@ -245,6 +245,15 @@ stages:
                 -PrintTopNLongest 25
 
           - task: PowerShell@2
+            displayName: 'Authenticate to Azure in Azure CLI'
+            condition: always()
+            inputs:
+              targetType: 'inline'
+              script: |
+                az login --service-principal --username $(CLIENT_ID) --password=$(CLIENT_SECRET) --tenant $(AZURE_TENANT) | Out-Null
+                az account set --subscription $(AZURE_SUBSCRIPTION) | Out-Null
+
+          - task: PowerShell@2
             displayName: "Clean up resources"
             condition: always()
             inputs:
