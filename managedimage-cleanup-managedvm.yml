@@ -34,9 +34,8 @@ jobs:
                         -ResourceGroup $(AZURE_RESOURCE_GROUP) `
                         -SubscriptionId $(AZURE_SUBSCRIPTION) `
                         -AgentsResourceGroup $(AZURE_AGENTS_RESOURCE_GROUP) `
-                        -VmssNameWindows $(VMSS_Windows2019) `
                         -VmssNameWindows2022 $(VMSS_Windows2022) `
-                        -VmssNameUbuntu $(VMSS_Ubuntu2004) `
+                        -VmssNameWindows2025 $(VMSS_Windows2025) `
                         -VmssNameUbuntu2204 $(VMSS_Ubuntu2204) `
                         -VmssNameUbuntu2404 $(VMSS_Ubuntu2404) `
                         -TenantId $(AZURE_TENANT)

@@ -6,7 +6,7 @@ parameters:
 - name: agent_pool
   displayName: Agent Pool
   type: string
-  default: CI Windows2019
+  default: CI Windows2022
 - name: delete_type
   displayName: 'Delete vmss (VM Scale Set) or galleryvm (Gallery VM) image?'
   type: string

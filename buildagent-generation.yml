@@ -2,11 +2,10 @@ parameters:
 - name: image_type
   displayName: Build Agent Image
   type: string
-  default: windows2019
+  default: windows2022
   values:
-  - windows2019
   - windows2022
-  - ubuntu2004
+  - windows2025
   - ubuntu2204
   - ubuntu2404
 - name: runner_images_version

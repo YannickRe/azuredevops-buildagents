@@ -2,11 +2,10 @@ parameters:
   - name: image_type
     displayName: Build Agent Image
     type: string
-    default: windows2019
+    default: windows2022
     values:
-      - windows2019
       - windows2022
-      - ubuntu2004
+      - windows2025
       - ubuntu2204
       - ubuntu2404
   - name: agent_pool
@@ -81,9 +80,8 @@ stages:
                   $os_image_type = '${{ parameters.image_type }}'
                   Write-Output "os image type = $os_image_type"
                   switch ($os_image_type) {
-                    'windows2019' { $OSTagPrefix = 'win19' }
                     'windows2022' { $OSTagPrefix = 'win22' }
-                    'ubuntu2004' { $OSTagPrefix = 'ubuntu20' }
+                    'windows2025' { $OSTagPrefix = 'win25' }
                     'ubuntu2204' { $OSTagPrefix = 'ubuntu22' }
                     'ubuntu2404' { $OSTagPrefix = 'ubuntu24' }
                   }
@@ -104,11 +102,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                if ("${{ parameters.image_type }}" -eq "ubuntu2004") {
-                  Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2004-Readme.md"
-                  $image_template_name = "ubuntu-20.04.pkr.hcl"
-                }
-                elseif ("${{ parameters.image_type }}" -eq "ubuntu2204") {
+                if ("${{ parameters.image_type }}" -eq "ubuntu2204") {
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2204-Readme.md"
                   $image_template_name = "ubuntu-22.04.pkr.hcl"
                 }
@@ -116,13 +110,13 @@ stages:
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2404-Readme.md"
                   $image_template_name = "ubuntu-24.04.pkr.hcl"
                 }                
-                elseif ("${{ parameters.image_type }}" -eq "windows2019") {
-                  Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2019-Readme.md"
-                  $image_template_name = "windows-2019.pkr.hcl"
-                }
                 elseif ("${{ parameters.image_type }}" -eq "windows2022") {
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2022-Readme.md"
                   $image_template_name = "windows-2022.pkr.hcl"
+                }        
+                elseif ("${{ parameters.image_type }}" -eq "windows2025") {
+                  Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2025-Readme.md"
+                  $image_template_name = "windows-2025.pkr.hcl"
                 }
 
                 $ImageType = "${{ parameters.image_type }}"
@@ -280,15 +274,12 @@ stages:
       - buildagent_template_vm_${{ parameters.image_type }}
     condition: and(succeeded(), eq('${{ parameters.update_type }}', 'vmss'))
     variables:
-      - ${{ if eq(parameters.image_type, 'windows2019') }}:
-          - name: VmssNames
-            value: $[variables.VMSS_Windows2019]
       - ${{ if eq(parameters.image_type, 'windows2022') }}:
           - name: VmssNames
             value: $[variables.VMSS_Windows2022]
-      - ${{ if eq(parameters.image_type, 'ubuntu2004') }}:
+      - ${{ if eq(parameters.image_type, 'windows2025') }}:
           - name: VmssNames
-            value: $[variables.VMSS_Ubuntu2004]
+            value: $[variables.VMSS_Windows2025]
       - ${{ if eq(parameters.image_type, 'ubuntu2204') }}:
           - name: VmssNames
             value: $[variables.VMSS_Ubuntu2204]

@@ -1,7 +1,7 @@
 # DevOps Build Agents
 This project generates self-hosted build agents based on the [official Microsoft-hosted build agents images](https://github.com/actions/runner-images), in an Azure DevOps Pipeline. The resulting Azure Managed Image will be associated to the existing Virtual Machine Scale Set so that new VM's will be using the newly generated image.  This Virtual Machine Scale Set is managed by Azure DevOps as a [Azure Virtual Machine Scale Set Agent](https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/agents?view=azure-devops&tabs=browser&WT.mc_id=M365-MVP-5003400#azure-virtual-machine-scale-set-agents).
 
-Currently supports Windows Server 2019, Windows Server 2022, Ubuntu 2004, Ubuntu 2204 and Ubuntu 2404 images.
+Currently supports Windows Server 2022, Windows Server 2025, Ubuntu 2204 and Ubuntu 2404 images.
 
 ## Available pipelines
 - __[buildagent-generation.yml](./buildagent-generation.yml)__  
@@ -18,11 +18,10 @@ The pipeline requires Azure resources for the temporary building of the VM image
 
 ## Azure Compute Gallery
 Create (if you don´t have one) an Azure Compute Gallery in your Azure subscription, and create the following VM Image Definitions:
-- ubuntu2004-agentpool-full (OS: Linux)
 - ubuntu2204-agentpool-full (OS: Linux)
 - ubuntu2404-agentpool-full (OS: Linux)
-- windows2019-agentpool-full (OS: Windows)
 - windows2022-agentpool-full (OS: Windows)  
+- windows2025-agentpool-full (OS: Windows)  
 
 This step will be automated in a later stage.
 
@@ -81,9 +80,8 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 | SHARED_GALLERY_NAME | (required for option galleryvm) Name of the Azure Compute Gallery to store images for Agent Pool VM Scale Sets.|
 | SHARED_GALLERY_RESOURCE_GROUP| (required for option galleryvm) Name of the resource group containing the Azure Compute Gallery.| 
 | SHARED_GALLERY_STORAGE_ACCOUNT_TYPE | (required for option galleryvm) Storage account type used to storage Gallery Image Versions. Accepted values: Standard_LRS, Premium_LRS, Standard_ZRS| 
-| VMSS_Windows2019 | (required for option vmss) Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2019. Support comma seperated list of names. |
 | VMSS_Windows2022 | (required for option vmss) Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2022. Support comma seperated list of names.|
-| VMSS_Ubuntu2004 | (required for option vmss) Name of the Azure Virtual Machine Scale Set that will run Build Agents on Ubuntu 20.04. Support comma seperated list of names. |
+| VMSS_Windows2025 | (required for option vmss) Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2025. Support comma seperated list of names.|
 | VMSS_Ubuntu2204 | (required for option vmss) Name of the Azure Virtual Machine Scale Set that will run Build Agents on Ubuntu 22.04. Support comma seperated list of names. |
 | VMSS_Ubuntu2404 | (required for option vmss) Name of the Azure Virtual Machine Scale Set that will run Build Agents on Ubuntu 24.04. Support comma seperated list of names. |
 
@@ -91,7 +89,7 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 ### Build Agent Generation
 ![Runtime parameters for Build Agent Generation](./assets/BuildAgentGeneration-Queue.png)  
 
-- __Build Agent Image__: which image to build, choice between `Windows Server 2019`, `Windows Server 2022`, `Ubuntu 20.04` and `Ubuntu 22.04`  
+- __Build Agent Image__: which image to build, choice between `Windows Server 2022`, `Windows Server 2022`, `Ubuntu 22.04` and `Ubuntu 24.04`  
 - __runner-images Version__: which source code of the runner-images to build, choice between `alpha` (latest main branch), `prerelease` (latest prerelease version), and `release` (latest stable release)  
 - __Variable Group__: name of the Variable Group containing the variables necessary for execution
 - __Agent Pool__: the Agent Pool to use for running the pipeline
@@ -169,9 +167,6 @@ The rest is quite self explanatory. Use the other parameters to provide the rema
 
 ### Scale Set Agents
 Azure virtual machine scale set agents are a form of self-hosted agents that can be autoscaled to meet demands. This elasticity reduces the need to run dedicated agents all the time.
-
-### Pipeline runtime
-Generating the images takes a long time, so don't be surprised. A Windows Server 2019 image takes about 6 to 7h's to generate, a Ubuntu 20.04 image takes about 4h's.
 
 ### Chicken or the egg
 Generating the image through Packer takes longer than 1h (see previous bullet point), and thus can't be run on the free tier of the Microsoft Hosted Agents (limited to 1h runs). It can only be run on the paid tier of the Microsoft Hosted Agent, or it needs an existing self-hosted agent to run.  
