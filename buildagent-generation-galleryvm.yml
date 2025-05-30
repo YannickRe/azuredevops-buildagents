@@ -51,7 +51,7 @@ jobs:
                  -SubscriptionId $(AZURE_SUBSCRIPTION) `
                  -TenantId $(AZURE_TENANT) `
                  -Location $(AZURE_LOCATION) `
-                 -GalleryName $(GALLERY_NAME) `
-                 -GalleryResourceGroup $(GALLERY_RESOURCE_GROUP) `
+                 -GalleryName $(SHARED_GALLERY_NAME) `
+                 -GalleryResourceGroup $(SHARED_GALLERY_RESOURCE_GROUP) `
                  -GalleryStorageAccountType $(GalleryStorageAccountType) `
                  -GalleryVmImageDefinition $(GalleryVmImageDefinition) 

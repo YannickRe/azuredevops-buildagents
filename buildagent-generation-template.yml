@@ -153,7 +153,7 @@ stages:
 
                 $StorageAccountType = "Standard_LRS"
                 try {
-                  $StorageAccountType = "$(GALLERY_STORAGE_ACCOUNT_TYPE)"
+                  $StorageAccountType = "$(SHARED_GALLERY_STORAGE_ACCOUNT_TYPE)"
                 } catch {
                 }
                 Write-Host "##vso[task.setvariable variable=GalleryStorageAccountType;isOutput=true]$StorageAccountType"

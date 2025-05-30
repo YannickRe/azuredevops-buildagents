@@ -78,9 +78,9 @@ Create a Variable Group in the Azure DevOps project running the pipeline, and gi
 | CLIENT_ID | Id of the Azure AD application that has appropriate permissions on the Subscription to create temporary resources and finalizing the Scale Set configuration. See output from scripts above. |
 | CLIENT_SECRET | Application secret to be used fot the connection in combination with the Client Id. See output from scripts above. |
 | RUN_VALIDATION_FLAG | Wether or not to run a validation on diskspace. Set the value to `false` unless you know what you are doing ;) |
-| GALLERY_NAME | (required for option galleryvm) Name of the Azure Compute Gallery to store images for Agent Pool VM Scale Sets.|
-| GALLERY_RESOURCE_GROUP| (required for option galleryvm) Name of the resource group containing the Azure Compute Gallery.| 
-| GALLERY_STORAGE_ACCOUNT_TYPE | (required for option galleryvm) Storage account type used to storage Gallery Image Versions. Accepted values: Standard_LRS, Premium_LRS, Standard_ZRS| 
+| SHARED_GALLERY_NAME | (required for option galleryvm) Name of the Azure Compute Gallery to store images for Agent Pool VM Scale Sets.|
+| SHARED_GALLERY_RESOURCE_GROUP| (required for option galleryvm) Name of the resource group containing the Azure Compute Gallery.| 
+| SHARED_GALLERY_STORAGE_ACCOUNT_TYPE | (required for option galleryvm) Storage account type used to storage Gallery Image Versions. Accepted values: Standard_LRS, Premium_LRS, Standard_ZRS| 
 | VMSS_Windows2019 | (required for option vmss) Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2019. Support comma seperated list of names. |
 | VMSS_Windows2022 | (required for option vmss) Name of the Azure Virtual Machine Scale Set that will run Build Agents on Windows Server 2022. Support comma seperated list of names.|
 | VMSS_Ubuntu2004 | (required for option vmss) Name of the Azure Virtual Machine Scale Set that will run Build Agents on Ubuntu 20.04. Support comma seperated list of names. |
@@ -183,3 +183,7 @@ See documentation for [YAML-based pipelines](https://docs.microsoft.com/en-us/az
 
 ## Azure CLI access denied error on Windows Host Pool
 Please make sure to disable the "Configure VMs to run interactive tests" in your Windows Agent pool setting, otherwise the Azure CLI will generate access denied errors when running a pipeline.
+
+## Version notes
+### 3.0.0
+* Rename all `GALLERY_*` variables to be `SHARED_GALLERY_*` to not conflict with new features coming in the templates by Microsoft.
