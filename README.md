@@ -180,6 +180,10 @@ See documentation for [YAML-based pipelines](https://docs.microsoft.com/en-us/az
 Please make sure to disable the "Configure VMs to run interactive tests" in your Windows Agent pool setting, otherwise the Azure CLI will generate access denied errors when running a pipeline.
 
 ## Version notes
+### 4.0.0
+* Fixed image generation after breaking changes from Microsoft
+* This is the last version (normally) to support Managed Images directly on a VMSS. We will move towards the native support for Shared Image Gallery updating that exists in packer and the source repository.  
+
 ### 3.0.0
 * Rename all `GALLERY_*` variables to be `SHARED_GALLERY_*` to not conflict with new features coming in the templates by Microsoft.
 * Removed support for Ubuntu 20.04 and Windows Server 2019
