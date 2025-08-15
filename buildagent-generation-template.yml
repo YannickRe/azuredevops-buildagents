@@ -63,6 +63,7 @@ stages:
               - checkout: ${{ parameters.repository_base_path }}
           
           - task: PowerShell@2
+            name: gitCheckout
             displayName: 'Checkout the GitHub repository'
             inputs:
               targetType: 'inline'
@@ -75,27 +76,28 @@ stages:
                 git clone "https://github.com/$GitHubOwner/$RepoName.git"
 
                 $runner_images_version = '${{ parameters.runner_images_version }}'
-                Write-Output "runner images version = $runner_images_version"
+                Write-Host "runner images version = $runner_images_version"
+                
+                $os_image_type = '${{ parameters.image_type }}'
+                Write-Host "os image type = $os_image_type"
+                switch ($os_image_type) {
+                  'windows2022' { $OSTagPrefix = 'win22' }
+                  'windows2025' { $OSTagPrefix = 'win25' }
+                  'ubuntu2204' { $OSTagPrefix = 'ubuntu22' }
+                  'ubuntu2404' { $OSTagPrefix = 'ubuntu24' }
+                }
+                Write-Host "OSTagPrefix = $OSTagPrefix"
+                Write-Host "##vso[task.setvariable variable=OSTagPrefix;]$OSTagPrefix"
+                
                 if ($runner_images_version -ne 'alpha') {
-                  $os_image_type = '${{ parameters.image_type }}'
-                  Write-Output "os image type = $os_image_type"
-                  switch ($os_image_type) {
-                    'windows2022' { $OSTagPrefix = 'win22' }
-                    'windows2025' { $OSTagPrefix = 'win25' }
-                    'ubuntu2204' { $OSTagPrefix = 'ubuntu22' }
-                    'ubuntu2404' { $OSTagPrefix = 'ubuntu24' }
-                  }
-                  Write-Output "OSTagPrefix = $OSTagPrefix"
-
                   $IncludePrerelease = if ($runner_images_version -eq 'prerelease') { $true } else { $false }
-                  Write-Output "IncludePrerelease = $IncludePrerelease"
+                  Write-Host "IncludePrerelease = $IncludePrerelease"
 
                   $latest_release = ${{ parameters.repository_base_path }}/scripts/get-latestgithubrelease.ps1 -OSTagPrefix $OSTagPrefix -GitHubOwner $GitHubOwner -RepoName $RepoName -IncludePrerelease $IncludePrerelease
-                  write-output $latest_release
+                  Write-Host "latest_release = $latest_release"
                   cd runner-images
                   git checkout ($latest_release.tag_name)
                 }
-          
           - task: PowerShell@2
             name: setVars
             displayName: 'Set image template variables'
@@ -104,34 +106,27 @@ stages:
               script: |
                 if ("${{ parameters.image_type }}" -eq "ubuntu2204") {
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2204-Readme.md"
-                  $image_template_name = "ubuntu-22.04.pkr.hcl"
+                  $image_template_name = "build.ubuntu-22_04.pkr.hcl"
                 }
                 elseif ("${{ parameters.image_type }}" -eq "ubuntu2404") {
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2404-Readme.md"
-                  $image_template_name = "ubuntu-24.04.pkr.hcl"
-                }                
+                  $image_template_name = "build.ubuntu-24_04.pkr.hcl"
+                }
                 elseif ("${{ parameters.image_type }}" -eq "windows2022") {
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2022-Readme.md"
-                  $image_template_name = "windows-2022.pkr.hcl"
-                }        
+                  $image_template_name = "build.windows-2022.pkr.hcl"
+                }
                 elseif ("${{ parameters.image_type }}" -eq "windows2025") {
                   Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2025-Readme.md"
-                  $image_template_name = "windows-2025.pkr.hcl"
+                  $image_template_name = "build.windows-2025.pkr.hcl"
                 }
+                Write-Host "##vso[task.setvariable variable=image_template_name]$image_template_name"
 
                 $ImageType = "${{ parameters.image_type }}"
                 $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu/templates" } else { "windows/templates" }
                 $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
+                $TemplatePath = Join-Path $TemplateDirectoryPath $($image_template_name)
 
-                $TemplateFileName = $image_template_name
-                if ($TemplateFileName) {
-                  $TemplatePath = Join-Path $TemplateDirectoryPath $TemplateFileName
-                } else {
-                  $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.pkr.hcl"
-                  if ( -not (Test-Path $TemplatePath) ) {
-                      $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.json"
-                  }
-                }
                 Write-Host "##vso[task.setvariable variable=TemplateDirectoryPath;]$TemplateDirectoryPath"
                 Write-Host "##vso[task.setvariable variable=TemplatePath;]$TemplatePath"
 
@@ -175,7 +170,7 @@ stages:
               filePath: ./runner-images/images.CI/linux-and-win/build-image.ps1
               arguments: -ClientId $(CLIENT_ID) `
                 -ClientSecret $(CLIENT_SECRET) `
-                -TemplatePath $(TemplatePath) `
+                -TemplatePath $(TemplateDirectoryPath) `
                 -ImageName "$(ManagedImageName)" `
                 -ImageResourceGroupName $(AZURE_RESOURCE_GROUP) `
                 -TempResourceGroupName "$(TempResourceGroupName)" `
@@ -184,7 +179,9 @@ stages:
                 -Location $(AZURE_LOCATION) `
                 -VirtualNetworkName $(BUILD_AGENT_VNET_NAME) `
                 -VirtualNetworkRG $(BUILD_AGENT_VNET_RESOURCE_GROUP) `
-                -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME)
+                -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME) `
+                -ImageOs "$(OSTagPrefix)" `
+                -BuildTemplateName "$(image_template_name)"
             env:
               PACKER_LOG: 1
               PACKER_LOG_PATH: "$(Agent.TempDirectory)/packer-log.txt"
