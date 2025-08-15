@@ -24,13 +24,6 @@ parameters:
   displayName: Agent Pool
   type: string
   default: 'Host Pool - Image'
-- name: update_type
-  displayName: 'Update vmss (VM Scale Set) or galleryvm (Gallery VM Image) ?'
-  type: string
-  default: galleryvm
-  values:
-  - galleryvm
-  - vmss
 
 trigger: none
 
@@ -41,4 +34,3 @@ stages:
     runner_images_version: ${{ parameters.runner_images_version }}
     variable_group_name: ${{ parameters.variable_group_name }}
     agent_pool: ${{ parameters.agent_pool }}
-    update_type: ${{ parameters.update_type }}

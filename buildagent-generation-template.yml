@@ -33,17 +33,10 @@ parameters:
     displayName: Scripts Path
     type: string
     default: .
-  - name: update_type
-    displayName: 'Update vmss (VM Scale Set) or galleryvm (Gallery VM Image) ?'
-    type: string
-    default: galleryvm
-    values:
-      - galleryvm
-      - vmss
 
 stages:
   - stage: buildagent_template_vm_${{ parameters.image_type }}
-    displayName: 'Build Agent Template VM'
+    displayName: 'Build Agent Template VM (${{ parameters.image_type }})'
     ${{ if ne(parameters.depends_on, ' ') }}:
       dependsOn: ${{ parameters.depends_on }}
     jobs:
@@ -61,105 +54,109 @@ stages:
           
           - ${{ if ne(parameters.repository_base_path, '.') }}:
               - checkout: ${{ parameters.repository_base_path }}
-          
-          - task: PowerShell@2
-            name: gitCheckout
-            displayName: 'Checkout the GitHub repository'
-            inputs:
-              targetType: 'inline'
-              script: |
-                $GitHubOwner = 'actions'
-                $RepoName = 'runner-images'
 
-                if (Test-Path ".\$RepoName\") { Remove-Item -Recurse -Force ".\$RepoName\" }
-
-                git clone "https://github.com/$GitHubOwner/$RepoName.git"
-
-                $runner_images_version = '${{ parameters.runner_images_version }}'
-                Write-Host "runner images version = $runner_images_version"
-                
-                $os_image_type = '${{ parameters.image_type }}'
-                Write-Host "os image type = $os_image_type"
-                switch ($os_image_type) {
-                  'windows2022' { $OSTagPrefix = 'win22' }
-                  'windows2025' { $OSTagPrefix = 'win25' }
-                  'ubuntu2204' { $OSTagPrefix = 'ubuntu22' }
-                  'ubuntu2404' { $OSTagPrefix = 'ubuntu24' }
-                }
-                Write-Host "OSTagPrefix = $OSTagPrefix"
-                Write-Host "##vso[task.setvariable variable=OSTagPrefix;]$OSTagPrefix"
-                
-                if ($runner_images_version -ne 'alpha') {
-                  $IncludePrerelease = if ($runner_images_version -eq 'prerelease') { $true } else { $false }
-                  Write-Host "IncludePrerelease = $IncludePrerelease"
-
-                  $latest_release = ${{ parameters.repository_base_path }}/scripts/get-latestgithubrelease.ps1 -OSTagPrefix $OSTagPrefix -GitHubOwner $GitHubOwner -RepoName $RepoName -IncludePrerelease $IncludePrerelease
-                  Write-Host "latest_release = $latest_release"
-                  cd runner-images
-                  git checkout ($latest_release.tag_name)
-                }
           - task: PowerShell@2
             name: setVars
             displayName: 'Set image template variables'
             inputs:
               targetType: 'inline'
               script: |
-                if ("${{ parameters.image_type }}" -eq "ubuntu2204") {
-                  Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2204-Readme.md"
-                  $image_template_name = "build.ubuntu-22_04.pkr.hcl"
+                $runner_images_version = '${{ parameters.runner_images_version }}'
+                $repository_base_path = '${{ parameters.repository_base_path }}'
+                $image_type = '${{ parameters.image_type }}'
+
+                switch ($image_type) {
+                  'windows2022' {
+                    $os = "windows"
+                    $image_os = "win22"
+                    $image_readme_name = "Windows2022-Readme.md"
+                    $build_template_name = "build.windows-2022.pkr.hcl"
+                  }
+                  'windows2025' {
+                    $os = "windows"
+                    $image_os = "win25"
+                    $image_readme_name = "Windows2025-Readme.md"
+                    $build_template_name = "build.windows-2025.pkr.hcl"
+                  }
+                  'ubuntu2204' {
+                    $os = "ubuntu"
+                    $image_os = "ubuntu22"
+                    $image_readme_name = "Ubuntu2204-Readme.md"
+                    $build_template_name = "build.ubuntu-22_04.pkr.hcl"
+                  }
+                  'ubuntu2404' {
+                    $os = "ubuntu"
+                    $image_os = "ubuntu24"
+                    $image_readme_name = "Ubuntu2404-Readme.md"
+                    $build_template_name = "build.ubuntu-24_04.pkr.hcl"
+                  }
                 }
-                elseif ("${{ parameters.image_type }}" -eq "ubuntu2404") {
-                  Write-Host "##vso[task.setvariable variable=image_readme_name]Ubuntu2404-Readme.md"
-                  $image_template_name = "build.ubuntu-24_04.pkr.hcl"
-                }
-                elseif ("${{ parameters.image_type }}" -eq "windows2022") {
-                  Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2022-Readme.md"
-                  $image_template_name = "build.windows-2022.pkr.hcl"
-                }
-                elseif ("${{ parameters.image_type }}" -eq "windows2025") {
-                  Write-Host "##vso[task.setvariable variable=image_readme_name]Windows2025-Readme.md"
-                  $image_template_name = "build.windows-2025.pkr.hcl"
-                }
-                Write-Host "##vso[task.setvariable variable=image_template_name]$image_template_name"
 
-                $ImageType = "${{ parameters.image_type }}"
-                $TemplateDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu/templates" } else { "windows/templates" }
-                $TemplateDirectoryPath = Join-Path (Join-Path "runner-images" "images") $TemplateDirectoryName | Resolve-Path
-                $TemplatePath = Join-Path $TemplateDirectoryPath $($image_template_name)
+                $template_path = Join-Path (Join-Path (Join-Path "runner-images" "images") $os) "templates"
+                $image_name = "$image_type-$(Build.BuildId)"
+                $temp_rg_name = "packer-temp-$image_name"
+                $gallery_image_name = "$image_type-agentpool-full"
+                $gallery_image_version = "$((Get-Date).ToString("yyyyMMdd")).$(Build.BuildId).0"
 
-                Write-Host "##vso[task.setvariable variable=TemplateDirectoryPath;]$TemplateDirectoryPath"
-                Write-Host "##vso[task.setvariable variable=TemplatePath;]$TemplatePath"
-
-                $ManagedImageName = "${{ parameters.image_type }}-$(Build.BuildId)"
-                Write-Host "##vso[task.setvariable variable=ManagedImageName;]$ManagedImageName"
-
-                $TempResourceGroupName = "packer-temp-$ManagedImageName"
-                Write-Host "##vso[task.setvariable variable=TempResourceGroupName;]$TempResourceGroupName"
-
-                $GalleryVmImageDefinition = "$ImageType-agentpool-full"
-                Write-Host "##vso[task.setvariable variable=GalleryVmImageDefinition;isOutput=true]$GalleryVmImageDefinition"
-                Write-Host "##vso[task.setvariable variable=ManagedImageNameOutput;isOutput=true]$ManagedImageName"
-
-                $StorageAccountType = "Standard_LRS"
-                try {
-                  $StorageAccountType = "$(SHARED_GALLERY_STORAGE_ACCOUNT_TYPE)"
-                } catch {
-                }
-                Write-Host "##vso[task.setvariable variable=GalleryStorageAccountType;isOutput=true]$StorageAccountType"
+                Write-Host "##vso[task.setvariable variable=repository_base_path]$repository_base_path"
+                Write-Host "##vso[task.setvariable variable=runner_images_version]$runner_images_version"
+                Write-Host "##vso[task.setvariable variable=image_type]$image_type"
+                Write-Host "##vso[task.setvariable variable=image_os]$image_os"
+                Write-Host "##vso[task.setvariable variable=image_readme_name]$image_readme_name"
+                Write-Host "##vso[task.setvariable variable=build_template_name]$build_template_name"
+                Write-Host "##vso[task.setvariable variable=template_path]$template_path"
+                Write-Host "##vso[task.setvariable variable=image_name]$image_name"
+                Write-Host "##vso[task.setvariable variable=temp_rg_name]$temp_rg_name"
+                Write-Host "##vso[task.setvariable variable=gallery_image_name]$gallery_image_name"
+                Write-Host "##vso[task.setvariable variable=gallery_image_version]$gallery_image_version"
                 
+
+                $client_id = "$(DOBA-CLIENT-ID)"
+                $client_secret = "$(DOBA-CLIENT-SECRET)"
+                $location = "$(DOBA-LOCATION)"
+                $tenant_id = "$(DOBA-TENANT-ID)"
+                $subscription_id = "$(DOBA-SUBSCRIPTION-ID)"
+                $image_rg_name = "$(DOBA-RESOURCE-GROUP)"
+                $gallery_name = "$(DOBA-GALLERY-NAME)"
+                $gallery_rg_name = "$(DOBA-GALLERY-RESOURCE-GROUP)"
+                $gallery_storage_account_type = "$(DOBA-GALLERY-STORAGE-ACCOUNT-TYPE)"
+                try { $vnet_name = "$(DOBA-VNET-NAME)" } catch { $vnet_name = $null }
+                try { $vnet_rg = "$(DOBA-VNET-RESOURCE-GROUP)" } catch { $vnet_rg = $null }
+                try { $vnet_subnet = "$(DOBA-VNET-SUBNET)" } catch { $vnet_subnet = $null }
+
+                Write-Host "##vso[task.setvariable variable=client_id]$client_id"
+                Write-Host "##vso[task.setvariable variable=client_secret;isSecret=true]$client_secret"
+                Write-Host "##vso[task.setvariable variable=location]$location"
+                Write-Host "##vso[task.setvariable variable=tenant_id]$tenant_id"
+                Write-Host "##vso[task.setvariable variable=subscription_id]$subscription_id"
+                Write-Host "##vso[task.setvariable variable=image_rg_name]$image_rg_name"
+                Write-Host "##vso[task.setvariable variable=gallery_name]$gallery_name"
+                Write-Host "##vso[task.setvariable variable=gallery_rg_name]$gallery_rg_name"
+                Write-Host "##vso[task.setvariable variable=gallery_storage_account_type]$gallery_storage_account_type"
+                Write-Host "##vso[task.setvariable variable=vnet_name]$vnet_name"
+                Write-Host "##vso[task.setvariable variable=vnet_rg]$vnet_rg"
+                Write-Host "##vso[task.setvariable variable=vnet_subnet]$vnet_subnet"
+
           - task: PowerShell@2
-            displayName: 'Workaround for issue: https://github.com/actions/runner-images/discussions/6251'
+            name: gitCheckout
+            displayName: 'Checkout the GitHub repository'
             inputs:
               targetType: 'inline'
               script: |
-                $ImageType = "${{ parameters.image_type }}"
-                $OsType = if ($ImageType.StartsWith("ubuntu")) { "Linux" } else { "Windows" }
-                If ($OsType -eq 'Windows') {
-                  Write-Host 'Attempting to modify $(TemplatePath) with workaround'
-                  ((Get-Content -path "$(TemplatePath)" -Raw) -replace 'default = {}','default = {"ExcludeMdeAutoProvisioning": "True"}') | Set-Content -Path "$(TemplatePath)"
-                  Write-Host "##[section] Template $(TemplatePath) modified"
-                } else {
-                  Write-Host "##[section] Patch not applied as $(TemplatePath) is not a Windows template"
+                $github_owner = 'actions'
+                $repo_name = 'runner-images'
+
+                if (Test-Path ".\$repo_name\") { Remove-Item -Recurse -Force ".\$repo_name\" }
+
+                git clone "https://github.com/$github_owner/$repo_name.git"
+                
+                if ('$(runner_images_version)' -ne 'alpha') {
+                  $include_prerelease = if ('$(runner_images_version)' -eq 'prerelease') { $true } else { $false }
+                  Write-Output "include_prerelease = $include_prerelease"
+                  $latest_release = ${{ parameters.repository_base_path }}/scripts/get-latestgithubrelease.ps1 -OSTagPrefix '$(image_os)' -GitHubOwner $github_owner -RepoName $repo_name -IncludePrerelease $include_prerelease
+                  Write-Output "latest_release = $latest_release"
+                  cd runner-images
+                  git checkout ($latest_release.tag_name)
                 }
 
           - task: PowerShell@2
@@ -168,31 +165,35 @@ stages:
             inputs:
               targetType: filePath
               filePath: ./runner-images/images.CI/linux-and-win/build-image.ps1
-              arguments: -ClientId $(CLIENT_ID) `
-                -ClientSecret $(CLIENT_SECRET) `
-                -TemplatePath $(TemplateDirectoryPath) `
-                -ImageName "$(ManagedImageName)" `
-                -ImageResourceGroupName $(AZURE_RESOURCE_GROUP) `
-                -TempResourceGroupName "$(TempResourceGroupName)" `
-                -SubscriptionId $(AZURE_SUBSCRIPTION) `
-                -TenantId $(AZURE_TENANT) `
-                -Location $(AZURE_LOCATION) `
-                -VirtualNetworkName $(BUILD_AGENT_VNET_NAME) `
-                -VirtualNetworkRG $(BUILD_AGENT_VNET_RESOURCE_GROUP) `
-                -VirtualNetworkSubnet $(BUILD_AGENT_SUBNET_NAME) `
-                -ImageOs "$(OSTagPrefix)" `
-                -BuildTemplateName "$(image_template_name)"
+              arguments: -TemplatePath '$(template_path)' `
+                -BuildTemplateName '$(build_template_name)' `
+                -ClientId '$(client_id)' `
+                -ClientSecret '$(client_secret)' `
+                -Location '$(location)' `
+                -ImageName '$(image_name)' `
+                -ImageResourceGroupName '$(image_rg_name)' `
+                -TempResourceGroupName '$(temp_rg_name)' `
+                -SubscriptionId '$(subscription_id)' `
+                -TenantId '$(tenant_id)' `
+                -ImageOs '$(image_os)' `
+                -VirtualNetworkName '$(vnet_name)' `
+                -VirtualNetworkRG '$(vnet_rg)' `
+                -VirtualNetworkSubnet '$(vnet_subnet)'
             env:
               PACKER_LOG: 1
               PACKER_LOG_PATH: "$(Agent.TempDirectory)/packer-log.txt"
+              GALLERY_NAME: "$(gallery_name)"
+              GALLERY_RG_NAME: "$(gallery_rg_name)"
+              GALLERY_IMAGE_NAME: "$(gallery_image_name)"
+              GALLERY_IMAGE_VERSION: "$(gallery_image_version)"
+              GALLERY_STORAGE_ACCOUNT_TYPE: "$(gallery_storage_account_type)"
 
           - task: PowerShell@2
             displayName: 'Copy image artifacts to the separate directory'
             inputs:
               targetType: 'inline'
               script: |
-                $ImageType = "${{ parameters.image_type }}"
-                $rootDirectoryName = if ($ImageType.StartsWith("ubuntu")) { "ubuntu" } else { "windows" }
+                $rootDirectoryName = if ("$(image_type)".StartsWith("ubuntu")) { "ubuntu" } else { "windows" }
                 $rootDirectoryPath = Join-Path (Join-Path "runner-images" "images") $rootDirectoryName | Resolve-Path
 
                 $readmePath = Join-Path $rootDirectoryPath "$(image_readme_name)"
@@ -232,7 +233,7 @@ stages:
               filePath: ./runner-images/images.CI/measure-provisioners-duration.ps1
               arguments:
                 -PackerLogPath "$(Agent.TempDirectory)/packer-log.txt" `
-                -PrefixToPathTrim "$(TemplateDirectoryPath)" `
+                -PrefixToPathTrim "$(template_path)" `
                 -PrintTopNLongest 25
 
           - task: PowerShell@2
@@ -241,8 +242,8 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                az login --service-principal --username $(CLIENT_ID) --password=$(CLIENT_SECRET) --tenant $(AZURE_TENANT) | Out-Null
-                az account set --subscription $(AZURE_SUBSCRIPTION) | Out-Null
+                az login --service-principal --username '$(client_id)' --password '$(client_secret)' --tenant '$(tenant_id)' | Out-Null
+                az account set --subscription '$(subscription_id)' | Out-Null
 
           - task: PowerShell@2
             displayName: "Clean up resources"
@@ -250,45 +251,13 @@ stages:
             inputs:
               targetType: filePath
               filePath: ./runner-images/images.CI/linux-and-win/cleanup.ps1
-              arguments: -TempResourceGroupName "$(TempResourceGroupName)"
+              arguments: -TempResourceGroupName "$(temp_rg_name)"
 
-  - stage: create_gallery_imagevm_${{ parameters.image_type }}
-    displayName: 'Create Gallery Image Version VM'
-    condition: and(succeeded(), eq('${{ parameters.update_type }}', 'galleryvm'))
-    dependsOn:
-      - buildagent_template_vm_${{ parameters.image_type }}
-    jobs:
-      - template: buildagent-generation-galleryvm.yml
-        parameters:
-          variable_group_name: ${{ parameters.variable_group_name }}
-          agent_pool: ${{ parameters.agent_pool }}
-          repository_base_path: ${{ parameters.repository_base_path }}
-          build_stage_job_name: buildagent_template_vm_${{ parameters.image_type }}
-
-  - stage: update_vmss_imagevm_${{ parameters.image_type }}
-    displayName: 'Update VM Scale Set to new Image'
-    dependsOn:
-      - buildagent_template_vm_${{ parameters.image_type }}
-    condition: and(succeeded(), eq('${{ parameters.update_type }}', 'vmss'))
-    variables:
-      - ${{ if eq(parameters.image_type, 'windows2022') }}:
-          - name: VmssNames
-            value: $[variables.VMSS_Windows2022]
-      - ${{ if eq(parameters.image_type, 'windows2025') }}:
-          - name: VmssNames
-            value: $[variables.VMSS_Windows2025]
-      - ${{ if eq(parameters.image_type, 'ubuntu2204') }}:
-          - name: VmssNames
-            value: $[variables.VMSS_Ubuntu2204]
-      - ${{ if eq(parameters.image_type, 'ubuntu2404') }}:
-          - name: VmssNames
-            value: $[variables.VMSS_Ubuntu2404]            
-    jobs:
-      - template: buildagent-generation-update-vmss.yml
-        parameters:
-          variable_group_name: ${{ parameters.variable_group_name }}
-          agent_pool: ${{ parameters.agent_pool }}
-          repository_base_path: ${{ parameters.repository_base_path }}
-          vmss_names: $(VmssNames)
-          build_stage_job_name: buildagent_template_vm_${{ parameters.image_type }}
-
+          - task: PowerShell@2
+            displayName: "Clean up temporary image"
+            condition: always()
+            inputs:
+              targetType: filePath
+              filePath: ${{ parameters.repository_base_path }}/scripts/cleanup-gallery-temporaryimage.ps1
+              arguments: -ManagedImageName '$(image_name)' `
+               -ResourceGroup '$(image_rg_name)'

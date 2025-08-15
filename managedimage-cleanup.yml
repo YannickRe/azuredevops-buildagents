@@ -3,13 +3,6 @@ parameters:
   displayName: Variable Group
   type: string
   default: 'Image Generation Variables'
-- name: delete_type
-  displayName: 'Delete vmss (VM Scale Set) or galleryvm (Gallery VM) image?'
-  type: string
-  default: galleryvm
-  values:
-  - galleryvm
-  - vmss
 
 schedules:
 - cron: "0 0 * * 6"
@@ -31,6 +24,5 @@ stages:
 - template: managedimage-cleanup-template.yml
   parameters:
     variable_group_name: ${{ parameters.variable_group_name }}
-    delete_type: ${{ parameters.delete_type }}
     gallery_images_to_keep: 3
     agent_pool: 'Azure Pipelines'

@@ -7,13 +7,6 @@ parameters:
   displayName: Agent Pool
   type: string
   default: CI Windows2022
-- name: delete_type
-  displayName: 'Delete vmss (VM Scale Set) or galleryvm (Gallery VM) image?'
-  type: string
-  default: galleryvm
-  values:
-  - galleryvm
-  - vmss
 - name: gallery_images_to_keep
   displayName: Number of image versions to keep in gallery
   type: number
@@ -26,21 +19,49 @@ parameters:
 stages:
 - stage: delete_gallery_imagevm
   displayName:  'Delete Gallery Image Version VM'
-  condition: eq('${{ parameters.delete_type }}', 'galleryvm')
   jobs:
-  - template: managedimage-cleanup-galleryvm.yml
-    parameters: 
-      variable_group_name: ${{ parameters.variable_group_name }}
-      agent_pool: ${{ parameters.agent_pool }}
-      repository_base_path: ${{ parameters.repository_base_path }}
-      gallery_images_to_keep: ${{ parameters.gallery_images_to_keep }}
+  - job: cleanupobsoletevmrunnerimages
+    displayName: 'Cleanup obsolete VM Gallery runner images'
+    pool: 
+      name: ${{ parameters.agent_pool }}
+    variables:
+    - group: ${{ parameters.variable_group_name }}
 
-- stage: delete_vmss_imagevm
-  displayName:  'Delete orphaned Managed Images'
-  condition: eq('${{ parameters.delete_type }}', 'vmss')
-  jobs:
-  - template: managedimage-cleanup-managedvm.yml
-    parameters: 
-      variable_group_name: ${{ parameters.variable_group_name }}
-      agent_pool: ${{ parameters.agent_pool }}
-      repository_base_path: ${{ parameters.repository_base_path }}
+
+    steps:
+    - checkout: self
+    - ${{ if ne(parameters.repository_base_path, '.') }}:
+      - checkout: ${{ parameters.repository_base_path }}
+    - task: PowerShell@2
+      name: setVars
+      displayName: 'Set image template variables'
+      inputs:
+        targetType: 'inline'
+        script: |
+          $client_id = "$(DOBA-CLIENT-ID)"
+          $client_secret = "$(DOBA-CLIENT-SECRET)"
+          $tenant_id = "$(DOBA-TENANT-ID)"
+          $subscription_id = "$(DOBA-SUBSCRIPTION-ID)"
+          $gallery_name = "$(DOBA-GALLERY-NAME)"
+          $gallery_rg_name = "$(DOBA-GALLERY-RESOURCE-GROUP)"
+
+          Write-Host "##vso[task.setvariable variable=client_id]$client_id"
+          Write-Host "##vso[task.setvariable variable=client_secret;isSecret=true]$client_secret"
+          Write-Host "##vso[task.setvariable variable=tenant_id]$tenant_id"
+          Write-Host "##vso[task.setvariable variable=subscription_id]$subscription_id"
+          Write-Host "##vso[task.setvariable variable=gallery_name]$gallery_name"
+          Write-Host "##vso[task.setvariable variable=gallery_rg_name]$gallery_rg_name"
+
+    - task: PowerShell@2
+      displayName: 'Remove obsolete VM Gallery runner Images'
+      inputs:
+        targetType: filePath
+        filePath: ${{ parameters.repository_base_path }}/scripts/cleanup-gallery-vmimageversion.ps1
+        arguments: -ClientId $(DOBA-CLIENT-ID) `
+                  -ClientSecret $(DOBA-CLIENT-SECRET) `
+                  -SubscriptionId $(DOBA-SUBSCRIPTION-ID) `
+                  -TenantId $(DOBA-TENANT-ID) `
+                  -GalleryName $(DOBA-GALLERY-NAME) `
+                  -GalleryResourceGroup $(DOBA-GALLERY-RESOURCE-GROUP) `
+                  -GalleryImagesToKeep ${{ parameters.gallery_images_to_keep }} `
+                  -ImageDefinitions @("ubuntu2204-agentpool-full", "ubuntu2404-agentpool-full", "windows2022-agentpool-full", "windows2025-agentpool-full")
