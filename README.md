@@ -161,9 +161,34 @@ See documentation for [YAML-based pipelines](https://docs.microsoft.com/en-us/az
 Please make sure to disable the "Configure VMs to run interactive tests" in your Windows Agent pool setting, otherwise the Azure CLI will generate access denied errors when running a pipeline.
 
 ## Version notes
+### 5.0.0 - breaking change
+* Removed support for directly updating a VMSS with a new image. This version only supports Azure Compute Gallery.  
+* Switched to packer native support for updating an Azure Compute Gallery with a new version of an image.  
+* Removed unused variables.  
+* Renamed variables with main goal to avoid overlap with runner-images environment variable declaration, using `DOBA` as a prefix (stands for **D**ev**O**ps **B**uild **A**gents). This also solves #76 by switching from `_` to `-`  
+  * Rename `AZURE_LOCATION` to `DOBA-LOCATION`  
+  * Rename `AZURE_RESOURCE_GROUP` to `DOBA-RESOURCE-GROUP`  
+  * Rename `AZURE_SUBSCRIPTION` to `DOBA-SUBSCRIPTION-ID`  
+  * Rename `AZURE_TENANT` to `DOBA-TENANT-ID`  
+  * Rename `CLIENT_ID` to `DOBA-CLIENT-ID`  
+  * Rename `CLIENT_SECRET` to `DOBA-CLIENT-SECRET`  
+  * Rename `SHARED_GALLERY_NAME` to `DOBA-GALLERY-NAME`  
+  * Rename `SHARED_GALLERY_RESOURCE_GROUP` to `DOBA-GALLERY-RESOURCE-GROUP`  
+  * Rename `SHARED_GALLERY_STORAGE_ACCOUNT_TYPE` to `DOBA-GALLERY-STORAGE-ACCOUNT-TYPE`  
+  * Remove `AZURE_AGENTS_RESOURCE_GROUP`
+  * Remove `RUN_VALIDATION_FLAG`
+  * Remove `VMSS_Windows2022`
+  * Remove `VMSS_Windows2025`
+  * Remove `VMSS_Ubuntu2204`
+  * Remove `VMSS_Ubuntu2404`
+* If you use your own existing Virtual Network for creating the temporary VM, you have to rename those variables too. If you don't use this (current value is set to `$null`), you can now remove these variables.  
+  * Rename `BUILD_AGENT_VNET_NAME` to `DOBA-VNET-NAME`  
+  * Rename `BUILD_AGENT_VNET_RESOURCE_GROUP` to `DOBA-VNET-RESOURCE-GROUP`  
+  * Rename `BUILD_AGENT_SUBNET_NAME` to `DOBA-VNET-SUBNET` 
+
 ### 4.0.0
 * Fixed image generation after breaking changes from Microsoft
-* This is the last version (normally) to support Managed Images directly on a VMSS. We will move towards the native support for Shared Image Gallery updating that exists in packer and the source repository.  
+* This is the last version (normally) to support Managed Images directly on a VMSS. We will move towards the native support for Azure Compute Gallery updating that exists in packer and the source repository.  
 
 ### 3.0.0
 * Rename all `GALLERY_*` variables to be `SHARED_GALLERY_*` to not conflict with new features coming in the templates by Microsoft.
