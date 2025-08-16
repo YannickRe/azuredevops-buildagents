@@ -5,16 +5,11 @@ param(
     [String] [Parameter (Mandatory=$true)] $TenantId,
     [String] [Parameter (Mandatory=$true)] $GalleryName,
     [String] [Parameter (Mandatory=$true)] $GalleryResourceGroup,
-    [int] [Parameter (Mandatory=$true)] $GalleryImagesToKeep 
+    [int] [Parameter (Mandatory=$true)] $GalleryImagesToKeep,
+    [Array] [Parameter (Mandatory=$true)] $ImageDefinitions
 )
 
 # Variables
-$imageDefinitions = @(
-    "ubuntu2204-agentpool-full",
-    "ubuntu2404-agentpool-full",
-    "windows2022-agentpool-full",
-    "windows2025-agentpool-full"
-)
 $ImageCountThreshold = $GalleryImagesToKeep + 1
 
 # install required modules
@@ -41,7 +36,7 @@ $needToWait = $false
 $JobList = @()
 if ($gallery) {
     # Loop through the image definitions
-    foreach ($imageDefinition in $imageDefinitions) {
+    foreach ($imageDefinition in $ImageDefinitions) {
         # Get the image definition
         try {
         $imageDef = Get-AzGalleryImageDefinition  -ResourceGroupName $GalleryResourceGroup -GalleryName $gallery.Name  -GalleryImageDefinitionName $imageDefinition
